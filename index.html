@@ -24,7 +24,6 @@ var game = new Phaser.Game(config);
 
 var line;
 var curve;
-//var scale = 1.0;
 var offset = -50;
 
 
@@ -224,22 +223,22 @@ function createGfx(t) {
     ];
 
     t.gfxGroup = [];
-
+    var enemyWidthScale = 1.0;  // was: t.scale
     enemyLocations.forEach(function (item, index) {
         // head
         t.gfxGroup.push(t.add.rectangle(
             t.scale * (item * 100), -80, // xy
-            t.scale * (20), 40,  // width, height
+            enemyWidthScale * (20), 40,  // width, height
             0x666622));
         // legs
         t.gfxGroup.push(t.add.rectangle(
             t.scale * (item * 100), 60, // xy
-            t.scale * (30), 80,  // width, height
+            enemyWidthScale * (30), 80,  // width, height
             0x1166ff));
         // body
         t.gfxGroup.push(t.add.rectangle(
             t.scale * (item * 100), -20, // xy
-            t.scale * (50), 100,  // width, height
+            enemyWidthScale * (50), 100,  // width, height
             0x6622ff));
             
         var s = 0;
