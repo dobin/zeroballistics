@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
+    <script src="https://labs.phaser.io/js/datgui.js"></script>
+</head>
+<body>
+
+<script>
+var config = {
+    type: Phaser.AUTO,
+    width: 1200,
+    height: 800,
+    backgroundColor: '#010101',
+    parent: 'phaser-example',
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var game = new Phaser.Game(config);
+
+var line;
+var curve;
+//var scale = 1.0;
+var offset = -50;
+
+
+var trajcetories = [
+    {
+        'link': '',
+        'title': '556 25yards',
+        'data': {
+            0: -9.398,
+            25: -0.0508,
+            50: 8.509,
+            75: 16.3322,
+            100: 23.368,
+            125: 29.6164,
+            150: 34.9758,
+            175: 39.4716,
+            200: 43.0276,
+            225: 45.593,
+            250: 47.117,
+            275: 47.5742,
+            300: 46.8884,
+            325: 45.0342,
+            350: 41.91,
+            375: 37.4396,
+            400: 31.5976,
+            425: 24.3078,
+            450: 15.4686,
+            475: 4.9784,
+            500: -7.2136,
+            525: -21.209,
+            550: -37.1094,
+            575: -55.0418,
+            600: -75.1078,
+        },
+    },
+    {
+        'link': '',
+        'title': '556 37yards',
+        'data': {
+            0: -9.398,
+            25: -2.8956,
+            50: 2.8702,
+            75: 7.874,
+            100: 12.1158,
+            125: 15.5194,
+            150: 18.0848,
+            175: 19.7612,
+            200: 20.4978,
+            225: 20.2692,
+            250: 18.9738,
+            275: 16.637,
+            300: 13.1318,
+            325: 8.4582,
+            350: 2.5146,
+            375: -4.7498,
+            400: -13.4112,
+            425: -23.5204,
+            450: -35.179,
+            475: -48.4632,
+            500: -63.4746,
+            525: -80.2894,
+            550: -99.0092,
+            575: -119.736,
+            600: -142.621,
+        },
+    },
+    {
+        'link': '',
+        'title': '556 50yards',
+        'data': {
+            0: -9.398,
+            25: -2.8956,
+            50: 2.8702,
+            75: 7.874,
+            100: 12.1158,
+            125: 15.5194,
+            150: 18.0848,
+            175: 19.7612,
+            200: 20.4978,
+            225: 20.2692,
+            250: 18.9738,
+            275: 16.637,
+            300: 13.1318,
+            325: 8.4582,
+            350: 2.5146,
+            375: -4.7498,
+            400: -13.4112,
+            425: -23.5204,
+            450: -35.179,
+            475: -48.4632,
+            500: -63.4746,
+            525: -80.2894,
+            550: -99.0092,
+            575: -119.736,
+            600: -142.621,
+        },
+    },
+    {
+        'link': '',
+        'title': '556 100yards',
+        'data': {
+            0: -9.398,
+            25: -5.9436,
+            50: -3.2004,
+            75: -1.2192,
+            100: -0.0254,
+            125: 0.381,
+            150: -0.0762,
+            175: -1.4224,
+            200: -3.7338,
+            225: -6.985,
+            250: -11.303,
+            275: -16.6878,
+            300: -23.1902,
+            325: -30.9118,
+            350: -39.878,
+            375: -50.165,
+            400: -61.849,
+            425: -74.9808,
+            450: -89.662,
+            475: -105.969,
+            500: -124.003,
+            525: -143.84,
+            550: -165.583,
+            575: -189.357,
+            600: -215.24,
+        },
+    },
+];
+
+
+function preload ()
+{
+    //this.load.image('lemming', 'assets/sprites/lemming.png');
+    //this.load.spritesheet('dragcircle', 'assets/sprites/dragcircle.png', { frameWidth: 16 });
+
+}
+
+function resetGfx(game) {
+    game.gfxGroup.forEach(function (item, index) {
+            item.destroy();
+        });
+    console.log("Scale: " + game.scale);
+    createGfx(game);
+}
+
+function create()
+{
+    this.scaleUi = 100;
+    this.scale = 1;
+    this.reload = false;
+    var gui = new dat.GUI({ 
+        width: 400,
+        closed: false,
+    });
+    var guiLevel = gui.addFolder('defaults');
+    scaleCtrl = guiLevel.add(this, 'scaleUi', 0, 10).name('Scale').min(1).max(100);
+    scaleCtrl.onFinishChange(function(value) {
+        value = value / 100;
+        this.scale = value;
+        resetGfx(this);
+    }.bind(this));
+    reloadCtrl = guiLevel.add(this, 'reload', 0, 10).name('Reload');
+
+    graphics = this.add.graphics();
+    this.cameras.main.zoom = 0.5;
+    createGfx(this);
+
+    /* zoom */
+    this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+        z = this.cameras.main.zoom;
+        if (deltaY < 0) {
+            this.cameras.main.zoom += (z/2);
+        } else {
+            this.cameras.main.zoom -= (z/2);
+        }
+        this.cameras.main.centerToBounds();
+        //this.cameras.main.centerOnY(-600);
+        //this.cameras.main.centerOn(pointer.worldX, pointer.worldY);
+    });
+}
+
+function createGfx(t) {
+    // in meters
+    var enemyLocations = [
+        0,
+        10,
+        25,
+        50,
+        100,
+        150,
+        200,
+        250,
+        300,
+        400,
+        500
+    ];
+
+    t.gfxGroup = [];
+
+    enemyLocations.forEach(function (item, index) {
+        // head
+        t.gfxGroup.push(t.add.rectangle(
+            t.scale * (item * 100), -80, // xy
+            t.scale * (20), 40,  // width, height
+            0x666622));
+        // legs
+        t.gfxGroup.push(t.add.rectangle(
+            t.scale * (item * 100), 60, // xy
+            t.scale * (30), 80,  // width, height
+            0x1166ff));
+        // body
+        t.gfxGroup.push(t.add.rectangle(
+            t.scale * (item * 100), -20, // xy
+            t.scale * (50), 100,  // width, height
+            0x6622ff));
+            
+        var s = 0;
+        if (t.scale > 0.5) {
+            s = 10;
+        } else if (t.scale >= 0.1) {
+            s = 5;
+        } else {
+            s = 3;
+        }
+        t.gfxGroup.push(t.add.text(
+            t.scale * ((item*100)-50), 100, 
+            item.toString()).setScale(s)
+        );
+    }.bind(this));
+
+    // height
+    t.gfxGroup.push(t.add.rectangle(
+        -200, 0, // xy
+        4, 200,  // width, height
+        0xffffff));
+    t.gfxGroup.push(t.add.text(
+        -250, 110, 
+        "2m").setScale(6));
+
+
+    // Line of sight
+    line = new Phaser.Geom.Line(
+        0, offset, 
+        t.scale * (60000), offset);
+    //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
+
+    // trajectory blocks
+    for (var key in trajcetories[0].data) {
+        value = trajcetories[0].data[key];
+
+        // use cm here
+        t.gfxGroup.push(t.add.rectangle(
+            t.scale * (key * 100), value * -1 + offset, // xy
+            t.scale * (100), 4,  // width, height
+            0xff0000));
+
+    }
+
+    // trajectory curve
+    points = [];
+    for (var key in trajcetories[0].data) {
+        value = trajcetories[0].data[key];
+
+        key = t.scale * (key * 100);
+        value = value * -1 + offset;
+        points.push(new Phaser.Math.Vector2(key, value));
+    }
+    curve = new Phaser.Curves.Spline(points);
+
+}
+
+function update (time, delta)
+{
+    if (this.reload) {
+        this.gfxGroup.forEach(function (item, index) {
+            item.destroy();
+        });
+        createGfx(this);
+        this.reload = false;
+    }
+    z = this.cameras.main.zoom;
+
+    // https://www.html5gamedevs.com/topic/9814-move-camera-by-dragging-the-world-floor/
+    // Dragging camera
+    if (this.game.input.activePointer.isDown) {
+        if (this.game.origDragPoint) {
+            // move the camera by the amount the mouse has moved since last update
+            var sX = this.game.origDragPoint.x - this.game.input.activePointer.position.x;
+            var sY = this.game.origDragPoint.y - this.game.input.activePointer.position.y;
+
+            this.cameras.main.scrollX += sX / z;
+            this.cameras.main.scrollY += sY / z;
+                
+        } // set new drag origin to current position
+        this.game.origDragPoint = this.game.input.activePointer.position.clone();
+    } else {
+        this.game.origDragPoint = null;
+    }
+
+    graphics.clear();
+
+    // 
+    graphics.lineStyle(2, 0xffffff, 1);
+    graphics.strokeLineShape(line);
+
+    //
+    graphics.lineStyle(2, 0xff0000, 1);
+    curve.draw(graphics);
+}
+
+</script>
+
+</body>
+</html>
