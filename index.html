@@ -9,7 +9,7 @@
 <script>
 var config = {
     type: Phaser.AUTO,
-    width: 1200,
+    width: 1440,
     height: 800,
     backgroundColor: '#010101',
     parent: 'phaser-example',
@@ -23,7 +23,7 @@ var config = {
 var game = new Phaser.Game(config);
 
 var line;
-var curve;
+var curves = [];
 var offset = -50;
 
 
@@ -166,27 +166,55 @@ function resetGfx(game) {
     game.gfxGroup.forEach(function (item, index) {
             item.destroy();
         });
-    console.log("Scale: " + game.scale);
     createGfx(game);
 }
 
 function create()
 {
-    this.scaleUi = 100;
-    this.scale = 1;
+    this.scaleUi = 10;
+    this.scale = 0.1;
     this.reload = false;
     var gui = new dat.GUI({ 
         width: 400,
         closed: false,
     });
-    var guiLevel = gui.addFolder('defaults');
-    scaleCtrl = guiLevel.add(this, 'scaleUi', 0, 10).name('Scale').min(1).max(100);
+    this.trajEnabled = [
+        false,
+        false,
+        true,
+        false
+    ];
+    //var guiLevel = gui.addFolder('defaults');
+    scaleCtrl = gui.add(this, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
     scaleCtrl.onFinishChange(function(value) {
         value = value / 100;
         this.scale = value;
         resetGfx(this);
     }.bind(this));
-    reloadCtrl = guiLevel.add(this, 'reload', 0, 10).name('Reload');
+
+    this.traj0 = false;
+    traj0ctrl = gui.add(this, 'traj0').name(trajcetories[0].title);
+    traj0ctrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
+
+    this.traj1 = false;
+    traj1ctrl = gui.add(this, 'traj1').name(trajcetories[1].title);
+    traj1ctrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
+
+    this.traj2 = true;
+    traj2ctrl = gui.add(this, 'traj2').name(trajcetories[2].title);
+    traj2ctrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
+
+    this.traj3 = false;
+    traj3ctrl = gui.add(this, 'traj3').name(trajcetories[3].title);
+    traj3ctrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
 
     graphics = this.add.graphics();
     this.cameras.main.zoom = 0.5;
@@ -272,28 +300,39 @@ function createGfx(t) {
     //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
 
     // trajectory blocks
-    for (var key in trajcetories[0].data) {
-        value = trajcetories[0].data[key];
+    curves = [];
+    trajs = [
+        t.traj0,
+        t.traj1,
+        t.traj2,
+        t.traj3,
+    ];
+    for(var i=0; i < trajs.length; i++) {
+        if (! trajs[i]) {
+            continue;
+        }
+        for (var key in trajcetories[i].data) {
+            value = trajcetories[i].data[key];
 
-        // use cm here
-        t.gfxGroup.push(t.add.rectangle(
-            t.scale * (key * 100), value * -1 + offset, // xy
-            t.scale * (100), 4,  // width, height
-            0xff0000));
+            // use cm here
+            t.gfxGroup.push(t.add.rectangle(
+                t.scale * (key * 100), value * -1 + offset, // xy
+                t.scale * (100), 4,  // width, height
+                0xff0000));
 
+        }
+
+        // trajectory curve
+        points = [];
+        for (var key in trajcetories[i].data) {
+            value = trajcetories[i].data[key];
+
+            key = t.scale * (key * 100);
+            value = value * -1 + offset;
+            points.push(new Phaser.Math.Vector2(key, value));
+        }
+        curves.push(new Phaser.Curves.Spline(points));
     }
-
-    // trajectory curve
-    points = [];
-    for (var key in trajcetories[0].data) {
-        value = trajcetories[0].data[key];
-
-        key = t.scale * (key * 100);
-        value = value * -1 + offset;
-        points.push(new Phaser.Math.Vector2(key, value));
-    }
-    curve = new Phaser.Curves.Spline(points);
-
 }
 
 function update (time, delta)
@@ -332,7 +371,10 @@ function update (time, delta)
 
     //
     graphics.lineStyle(2, 0xff0000, 1);
-    curve.draw(graphics);
+    for(var i=0; i<curves.length; i++) {
+        curves[i].draw(graphics);
+    }
+    
 }
 
 </script>
