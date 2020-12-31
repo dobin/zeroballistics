@@ -182,6 +182,8 @@ function create()
         true,
         false
     ];
+    this.show10m = false;
+    this.showLos = true;
     this.showRing = false;
     this.showTwo = false;
     this.topDotZero = true;
@@ -222,6 +224,15 @@ function create()
         resetGfx(this);
     }.bind(this));
 
+    show10mCtrl = gui.add(this, 'show10m').name("show10m");
+    show10mCtrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
+
+    showLosCtrl = gui.add(this, 'showLos').name("showLos");
+    showLosCtrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
 
     showRingCtrl = gui.add(this, 'showRing').name("showRing");
     showRingCtrl.onChange(function(value) {
@@ -270,6 +281,10 @@ function createGfx(t) {
     t.gfxGroup = [];
     var enemyWidthScale = 1.0;  // was: t.scale
     enemyLocations.forEach(function (item, index) {
+        if (item == 10 && !t.show10m) {
+            return;
+        }
+
         // head
         t.gfxGroup.push(t.add.rectangle(
             t.scale * (item * 100), -80, // xy
@@ -311,9 +326,13 @@ function createGfx(t) {
 
 
     // Line of sight
-    line = new Phaser.Geom.Line(
-        0, offset, 
-        t.scale * (60000), offset);
+    if (t.showLos) {
+        line = new Phaser.Geom.Line(
+            0, offset, 
+            t.scale * (60000), offset);
+    } else {
+        line = null;
+    }
 
     if (t.showTwo) {
         line2 = new Phaser.Geom.Line(
@@ -410,8 +429,10 @@ function update (time, delta)
     graphics.clear();
 
     // los, white
-    graphics.lineStyle(2, 0xffffff, 1);
-    graphics.strokeLineShape(line);
+    if (line != null) {
+        graphics.lineStyle(2, 0xffffff, 1);
+        graphics.strokeLineShape(line);
+    }
 
     // exps, pink
     if (line2 != null) {
