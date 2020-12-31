@@ -23,6 +23,7 @@ var config = {
 var game = new Phaser.Game(config);
 
 var line;
+var line2;
 var curves = [];
 var offset = -50;
 
@@ -171,19 +172,24 @@ function resetGfx(game) {
 
 function create()
 {
+    /* config */
     this.scaleUi = 10;
     this.scale = 0.1;
     this.reload = false;
-    var gui = new dat.GUI({ 
-        width: 400,
-        closed: false,
-    });
     this.trajEnabled = [
         false,
         false,
         true,
         false
     ];
+    this.showRing = false;
+    this.showTwo = false;
+    this.topDotZero = true;
+
+    var gui = new dat.GUI({ 
+        width: 400,
+        closed: false,
+    });
     //var guiLevel = gui.addFolder('defaults');
     scaleCtrl = gui.add(this, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
     scaleCtrl.onFinishChange(function(value) {
@@ -213,6 +219,17 @@ function create()
     this.traj3 = false;
     traj3ctrl = gui.add(this, 'traj3').name(trajcetories[3].title);
     traj3ctrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
+
+
+    showRingCtrl = gui.add(this, 'showRing').name("showRing");
+    showRingCtrl.onChange(function(value) {
+        resetGfx(this);
+    }.bind(this));
+
+    showTwoCtrl = gui.add(this, 'showTwo').name("showTwo");
+    showTwoCtrl.onChange(function(value) {
         resetGfx(this);
     }.bind(this));
 
@@ -278,7 +295,7 @@ function createGfx(t) {
             s = 3;
         }
         t.gfxGroup.push(t.add.text(
-            t.scale * ((item*100)-50), 100, 
+            t.scale * ((item*100))-50, 100, 
             item.toString()).setScale(s)
         );
     }.bind(this));
@@ -297,7 +314,34 @@ function createGfx(t) {
     line = new Phaser.Geom.Line(
         0, offset, 
         t.scale * (60000), offset);
-    //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
+
+    if (t.showTwo) {
+        line2 = new Phaser.Geom.Line(
+            0, offset, 
+            //t.scale * (60000), offset);
+            // xy
+            t.scale * (10000), offset+38);
+    } else {
+        line2 = null;
+    }
+
+    if (t.showRing) {
+        line3 = new Phaser.Geom.Line(
+            0, offset, 
+            //t.scale * (60000), offset);
+            // xy
+            t.scale * (10000), offset+96); // 15 moa = 38cm
+        line4 = new Phaser.Geom.Line(
+            0, offset, 
+            //t.scale * (60000), offset);
+            // xy
+            t.scale * (10000), offset-96);  // 68moa / 2 = 96cm
+    } else {
+        line3 = null;
+        line4 = null;
+    }
+
+        //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
 
     // trajectory blocks
     curves = [];
@@ -365,11 +409,24 @@ function update (time, delta)
 
     graphics.clear();
 
-    // 
+    // los, white
     graphics.lineStyle(2, 0xffffff, 1);
     graphics.strokeLineShape(line);
 
-    //
+    // exps, pink
+    if (line2 != null) {
+        graphics.lineStyle(2, 0xff22ff, 1);
+        graphics.strokeLineShape(line2);
+    }
+
+    // ring, yellow
+    if (line3 != null) {
+        graphics.lineStyle(2, 0xffff00, 1);
+        graphics.strokeLineShape(line3);
+        graphics.strokeLineShape(line4);
+    }
+
+    // trajectories, red
     graphics.lineStyle(2, 0xff0000, 1);
     for(var i=0; i<curves.length; i++) {
         curves[i].draw(graphics);
