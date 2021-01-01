@@ -7,6 +7,7 @@
 <body>
 
 <script>
+// Static Config
 var config = {
     type: Phaser.AUTO,
     width: 1440,
@@ -17,18 +18,21 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+
+    offset: -50,
 };
 
 
+// Dynamic Config
 var UiConfig = function() {
     this.reload = false;
-    this.trajEnabled = [
-        false,
-        false,
-        true,
-        false
-    ];
+
+    this.traj0 = false;
+    this.traj1 = false;
+    this.traj2 = true;
+    this.traj3 = false;
+
     this.scaleUi = 10;
     this.scale = 0.1;
 
@@ -40,10 +44,19 @@ var UiConfig = function() {
 }
 var uiConfig = new UiConfig();
 
+// The game
 var game = null;
 
+// Runtime Data
 var data = {
     gfxGroup: [],
+
+    lineLos: null,
+    lineExps: null,
+    lineRing1: null,
+    lineRing2: null,
+
+    trajCurves: null,
 };
 
 
@@ -173,7 +186,6 @@ var trajcetories = [
         },
     },
 ];
-// in meters
 var enemyLocations = [
     -3,
     10,
@@ -186,13 +198,10 @@ var enemyLocations = [
     300,
     400,
     500
-];
+];  // in meters
 
-var line;
-var line2;
-var curves = [];
-var offset = -50;
 
+// Start here
 window.onload = function() {
     initGui();
     new Phaser.Game(config);
@@ -269,14 +278,7 @@ function preload ()
 // Phaser Create
 function create()
 {
-    // this = game
-    // Has: .add
     game = this;
-
-    // console.log(this);  // this = game?
-    //console.log(this);
-    //console.log(game);
-
     graphics = this.add.graphics();
     this.cameras.main.zoom = 0.5;
     createGfx();
@@ -305,27 +307,33 @@ function update(time, delta)
         createGfx(this);
         this.reload = false;
     }
-    z = this.cameras.main.zoom;
 
-    // https://www.html5gamedevs.com/topic/9814-move-camera-by-dragging-the-world-floor/
-    // Dragging camera
-    if (this.game.input.activePointer.isDown) {
-        if (this.game.origDragPoint) {
-            // move the camera by the amount the mouse has moved since last update
-            var sX = this.game.origDragPoint.x - this.game.input.activePointer.position.x;
-            var sY = this.game.origDragPoint.y - this.game.input.activePointer.position.y;
-
-            this.cameras.main.scrollX += sX / z;
-            this.cameras.main.scrollY += sY / z;
-                
-        } // set new drag origin to current position
-        this.game.origDragPoint = this.game.input.activePointer.position.clone();
-    } else {
-        this.game.origDragPoint = null;
-    }
+    handleZoom(this);
 
     graphics.clear();
     drawLines(graphics);
+}
+
+
+function handleZoom(tt) {
+    z = tt.cameras.main.zoom;
+
+    // https://www.html5gamedevs.com/topic/9814-move-camera-by-dragging-the-world-floor/
+    // Dragging camera
+    if (tt.game.input.activePointer.isDown) {
+        if (tt.game.origDragPoint) {
+            // move the camera by the amount the mouse has moved since last update
+            var sX = tt.game.origDragPoint.x - tt.game.input.activePointer.position.x;
+            var sY = tt.game.origDragPoint.y - tt.game.input.activePointer.position.y;
+
+            tt.cameras.main.scrollX += sX / z;
+            tt.cameras.main.scrollY += sY / z;
+                
+        } // set new drag origin to current position
+        tt.game.origDragPoint = tt.game.input.activePointer.position.clone();
+    } else {
+        tt.game.origDragPoint = null;
+    }
 }
 
 
@@ -361,48 +369,48 @@ function createGfx() {
 
     // Line of sight
     if (uiConfig.showLos) {
-        line = new Phaser.Geom.Line(
-            0, offset, 
-            uiConfig.scale * (60000), offset);
+        data.lineLos = new Phaser.Geom.Line(
+            0, config.offset, 
+            uiConfig.scale * (60000), config.offset);
     } else {
-        line = null;
+        data.lineLos = null;
     }
 
     if (uiConfig.showTwo) {
-        line2 = new Phaser.Geom.Line(
-            0, offset, 
-            //uiConfig.scale * (60000), offset);
+        data.lineExps = new Phaser.Geom.Line(
+            0, config.offset, 
+            //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (10000), offset+38);
+            uiConfig.scale * (10000), config.offset+38);
     } else {
-        line2 = null;
+        data.lineExps = null;
     }
 
     if (uiConfig.showRing) {
-        line3 = new Phaser.Geom.Line(
-            0, offset, 
-            //uiConfig.scale * (60000), offset);
+        data.lineRing1 = new Phaser.Geom.Line(
+            0, config.offset, 
+            //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (10000), offset+96); // 15 moa = 38cm
-        line4 = new Phaser.Geom.Line(
-            0, offset, 
-            //uiConfig.scale * (60000), offset);
+            uiConfig.scale * (10000), config.offset+96); // 15 moa = 38cm
+        data.lineRing2 = new Phaser.Geom.Line(
+            0, config.offset, 
+            //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (10000), offset-96);  // 68moa / 2 = 96cm
+            uiConfig.scale * (10000), config.offset-96);  // 68moa / 2 = 96cm
     } else {
-        line3 = null;
-        line4 = null;
+        data.lineRing1 = null;
+        data.lineRing2 = null;
     }
 
         //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
 
     // trajectory blocks
-    curves = [];
+    data.trajCurves = [];
     trajs = [
-        uiConfig.trajEnabled[0],
-        uiConfig.trajEnabled[1],
-        uiConfig.trajEnabled[2],
-        uiConfig.trajEnabled[3],
+        uiConfig.traj0,
+        uiConfig.traj1,
+        uiConfig.traj2,
+        uiConfig.traj3,
     ];
     for(var i=0; i < trajs.length; i++) {
         if (! trajs[i]) {
@@ -416,10 +424,10 @@ function createGfx() {
             value = trajcetories[i].data[key];
 
             key = uiConfig.scale * (key * 100);
-            value = value * -1 + offset;
+            value = value * -1 + config.offset;
             points.push(new Phaser.Math.Vector2(key, value));
         }
-        curves.push(new Phaser.Curves.Spline(points));
+        data.trajCurves.push(new Phaser.Curves.Spline(points));
     }
 }
 
@@ -452,7 +460,7 @@ function makeDots(dotsData) {
 
         // use cm here
         data.gfxGroup.push(game.add.rectangle(
-            uiConfig.scale * (key * 100), value * -1 + offset, // xy
+            uiConfig.scale * (key * 100), value * -1 + config.offset, // xy
             uiConfig.scale * (100), 1,  // width, height
             0xff0000));
     }
@@ -477,28 +485,28 @@ function makeNr(item) {
 
 function drawLines(graphics) {
     // los, white
-    if (line != null) {
+    if (data.lineLos != null) {
         graphics.lineStyle(2, 0xffffff, 1);
-        graphics.strokeLineShape(line);
+        graphics.strokeLineShape(data.lineLos);
     }
 
     // exps, grey-yellow
-    if (line2 != null) {
+    if (data.lineExps != null) {
         graphics.lineStyle(2, 0xffff99, 1);
-        graphics.strokeLineShape(line2);
+        graphics.strokeLineShape(data.lineExps);
     }
 
     // ring, grey
-    if (line3 != null) {
+    if (data.lineRing1 != null) {
         graphics.lineStyle(2, 0x686868, 1);
-        graphics.strokeLineShape(line3);
-        graphics.strokeLineShape(line4);
+        graphics.strokeLineShape(data.lineRing1);
+        graphics.strokeLineShape(data.lineRing2);
     }
 
     // trajectories, red
     graphics.lineStyle(2, 0xff0000, 1);
-    for(var i=0; i<curves.length; i++) {
-        curves[i].draw(graphics);
+    for(var i=0; i<data.trajCurves.length; i++) {
+        data.trajCurves[i].draw(graphics);
     }
 }
 
