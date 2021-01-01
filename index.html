@@ -265,7 +265,7 @@ function create()
 function createGfx(t) {
     // in meters
     var enemyLocations = [
-        0,
+        -3,
         10,
         25,
         50,
@@ -279,40 +279,14 @@ function createGfx(t) {
     ];
 
     t.gfxGroup = [];
-    var enemyWidthScale = 1.0;  // was: t.scale
     enemyLocations.forEach(function (item, index) {
         if (item == 10 && !t.show10m) {
             return;
         }
-
-        // head
-        t.gfxGroup.push(t.add.rectangle(
-            t.scale * (item * 100), -80, // xy
-            enemyWidthScale * (20), 40,  // width, height
-            0x666622));
-        // legs
-        t.gfxGroup.push(t.add.rectangle(
-            t.scale * (item * 100), 60, // xy
-            enemyWidthScale * (30), 80,  // width, height
-            0x1166ff));
-        // body
-        t.gfxGroup.push(t.add.rectangle(
-            t.scale * (item * 100), -20, // xy
-            enemyWidthScale * (50), 100,  // width, height
-            0x6622ff));
-            
-        var s = 0;
-        if (t.scale > 0.5) {
-            s = 10;
-        } else if (t.scale >= 0.1) {
-            s = 5;
-        } else {
-            s = 3;
+        makeEnemy(t, item);
+        if (item > 0) {
+            makeNr(t, item);
         }
-        t.gfxGroup.push(t.add.text(
-            t.scale * ((item*100))-50, 100, 
-            item.toString()).setScale(s)
-        );
     }.bind(this));
 
     // height
@@ -323,7 +297,6 @@ function createGfx(t) {
     t.gfxGroup.push(t.add.text(
         -250, 110, 
         "2m").setScale(6));
-
 
     // Line of sight
     if (t.showLos) {
@@ -374,16 +347,7 @@ function createGfx(t) {
         if (! trajs[i]) {
             continue;
         }
-        for (var key in trajcetories[i].data) {
-            value = trajcetories[i].data[key];
-
-            // use cm here
-            t.gfxGroup.push(t.add.rectangle(
-                t.scale * (key * 100), value * -1 + offset, // xy
-                t.scale * (100), 4,  // width, height
-                0xff0000));
-
-        }
+        makeDots(t, trajcetories[i].data);
 
         // trajectory curve
         points = [];
@@ -396,6 +360,54 @@ function createGfx(t) {
         }
         curves.push(new Phaser.Curves.Spline(points));
     }
+}
+
+function makeEnemy(t, item) {
+    var enemyWidthScale = 1.0;  // was: t.scale
+
+    // head
+    t.gfxGroup.push(t.add.rectangle(
+        t.scale * (item * 100), -80, // xy
+        enemyWidthScale * (20), 40,  // width, height
+        0x666622));
+    // legs
+    t.gfxGroup.push(t.add.rectangle(
+        t.scale * (item * 100), 60, // xy
+        enemyWidthScale * (30), 80,  // width, height
+        0x1166ff));
+    // body
+    t.gfxGroup.push(t.add.rectangle(
+        t.scale * (item * 100), -20, // xy
+        enemyWidthScale * (50), 100,  // width, height
+        0x6622ff));
+}
+
+function makeDots(t, data) {
+    //for (var key in trajcetories[i].data) {
+    for (var key in data) {
+        value = data[key];
+
+        // use cm here
+        t.gfxGroup.push(t.add.rectangle(
+            t.scale * (key * 100), value * -1 + offset, // xy
+            t.scale * (100), 1,  // width, height
+            0xff0000));
+    }
+}
+
+function makeNr(t, item) {
+    var s = 0;
+        if (t.scale > 0.5) {
+            s = 10;
+        } else if (t.scale >= 0.1) {
+            s = 5;
+        } else {
+            s = 3;
+        }
+        t.gfxGroup.push(t.add.text(
+            t.scale * ((item*100))-50, 100, 
+            item.toString()).setScale(s)
+        );
 }
 
 function update (time, delta)
@@ -427,22 +439,25 @@ function update (time, delta)
     }
 
     graphics.clear();
+    drawLines(graphics);
+}
 
+function drawLines(graphics) {
     // los, white
     if (line != null) {
         graphics.lineStyle(2, 0xffffff, 1);
         graphics.strokeLineShape(line);
     }
 
-    // exps, pink
+    // exps, grey-yellow
     if (line2 != null) {
-        graphics.lineStyle(2, 0xff22ff, 1);
+        graphics.lineStyle(2, 0xffff99, 1);
         graphics.strokeLineShape(line2);
     }
 
-    // ring, yellow
+    // ring, grey
     if (line3 != null) {
-        graphics.lineStyle(2, 0xffff00, 1);
+        graphics.lineStyle(2, 0x686868, 1);
         graphics.strokeLineShape(line3);
         graphics.strokeLineShape(line4);
     }
@@ -452,7 +467,6 @@ function update (time, delta)
     for(var i=0; i<curves.length; i++) {
         curves[i].draw(graphics);
     }
-    
 }
 
 </script>
