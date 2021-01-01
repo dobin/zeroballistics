@@ -20,12 +20,31 @@ var config = {
     }
 };
 
-var game = new Phaser.Game(config);
 
-var line;
-var line2;
-var curves = [];
-var offset = -50;
+var UiConfig = function() {
+    this.reload = false;
+    this.trajEnabled = [
+        false,
+        false,
+        true,
+        false
+    ];
+    this.scaleUi = 10;
+    this.scale = 0.1;
+
+    this.show10m = false;
+    this.showLos = true;
+    this.showRing = false;
+    this.showTwo = false;
+    this.topDotZero = true;
+}
+var uiConfig = new UiConfig();
+
+var game = null;
+
+var data = {
+    gfxGroup: [],
+};
 
 
 var trajcetories = [
@@ -154,8 +173,92 @@ var trajcetories = [
         },
     },
 ];
+// in meters
+var enemyLocations = [
+    -3,
+    10,
+    25,
+    50,
+    100,
+    150,
+    200,
+    250,
+    300,
+    400,
+    500
+];
+
+var line;
+var line2;
+var curves = [];
+var offset = -50;
+
+window.onload = function() {
+    initGui();
+    new Phaser.Game(config);
+};
 
 
+function initGui() {
+    var gui = new dat.GUI({ 
+        width: 400,
+        closed: false,
+    });
+    //var guiLevel = gui.addFolder('defaults');
+    scaleCtrl = gui.add(uiConfig, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
+    scaleCtrl.onFinishChange(function(value) {
+        value = value / 100;
+        this.scale = value;
+        resetGfx();
+    }.bind(this));
+
+    uiConfig.traj0 = false;
+    traj0ctrl = gui.add(uiConfig, 'traj0').name(trajcetories[0].title);
+    traj0ctrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    uiConfig.traj1 = false;
+    traj1ctrl = gui.add(uiConfig, 'traj1').name(trajcetories[1].title);
+    traj1ctrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    uiConfig.traj2 = true;
+    traj2ctrl = gui.add(uiConfig, 'traj2').name(trajcetories[2].title);
+    traj2ctrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    uiConfig.traj3 = false;
+    traj3ctrl = gui.add(uiConfig, 'traj3').name(trajcetories[3].title);
+    traj3ctrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    show10mCtrl = gui.add(uiConfig, 'show10m').name("show10m");
+    show10mCtrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    showLosCtrl = gui.add(uiConfig, 'showLos').name("showLos");
+    showLosCtrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    showRingCtrl = gui.add(uiConfig, 'showRing').name("showRing");
+    showRingCtrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    showTwoCtrl = gui.add(uiConfig, 'showTwo').name("showTwo");
+    showTwoCtrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+}
+
+
+// Phaser Preload
 function preload ()
 {
     //this.load.image('lemming', 'assets/sprites/lemming.png');
@@ -163,90 +266,20 @@ function preload ()
 
 }
 
-function resetGfx(game) {
-    game.gfxGroup.forEach(function (item, index) {
-            item.destroy();
-        });
-    createGfx(game);
-}
-
+// Phaser Create
 function create()
 {
-    /* config */
-    this.scaleUi = 10;
-    this.scale = 0.1;
-    this.reload = false;
-    this.trajEnabled = [
-        false,
-        false,
-        true,
-        false
-    ];
-    this.show10m = false;
-    this.showLos = true;
-    this.showRing = false;
-    this.showTwo = false;
-    this.topDotZero = true;
+    // this = game
+    // Has: .add
+    game = this;
 
-    var gui = new dat.GUI({ 
-        width: 400,
-        closed: false,
-    });
-    //var guiLevel = gui.addFolder('defaults');
-    scaleCtrl = gui.add(this, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
-    scaleCtrl.onFinishChange(function(value) {
-        value = value / 100;
-        this.scale = value;
-        resetGfx(this);
-    }.bind(this));
-
-    this.traj0 = false;
-    traj0ctrl = gui.add(this, 'traj0').name(trajcetories[0].title);
-    traj0ctrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    this.traj1 = false;
-    traj1ctrl = gui.add(this, 'traj1').name(trajcetories[1].title);
-    traj1ctrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    this.traj2 = true;
-    traj2ctrl = gui.add(this, 'traj2').name(trajcetories[2].title);
-    traj2ctrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    this.traj3 = false;
-    traj3ctrl = gui.add(this, 'traj3').name(trajcetories[3].title);
-    traj3ctrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    show10mCtrl = gui.add(this, 'show10m').name("show10m");
-    show10mCtrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    showLosCtrl = gui.add(this, 'showLos').name("showLos");
-    showLosCtrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    showRingCtrl = gui.add(this, 'showRing').name("showRing");
-    showRingCtrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
-
-    showTwoCtrl = gui.add(this, 'showTwo').name("showTwo");
-    showTwoCtrl.onChange(function(value) {
-        resetGfx(this);
-    }.bind(this));
+    // console.log(this);  // this = game?
+    //console.log(this);
+    //console.log(game);
 
     graphics = this.add.graphics();
     this.cameras.main.zoom = 0.5;
-    createGfx(this);
+    createGfx();
 
     /* zoom */
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
@@ -262,155 +295,8 @@ function create()
     });
 }
 
-function createGfx(t) {
-    // in meters
-    var enemyLocations = [
-        -3,
-        10,
-        25,
-        50,
-        100,
-        150,
-        200,
-        250,
-        300,
-        400,
-        500
-    ];
-
-    t.gfxGroup = [];
-    enemyLocations.forEach(function (item, index) {
-        if (item == 10 && !t.show10m) {
-            return;
-        }
-        makeEnemy(t, item);
-        if (item > 0) {
-            makeNr(t, item);
-        }
-    }.bind(this));
-
-    // height
-    t.gfxGroup.push(t.add.rectangle(
-        -200, 0, // xy
-        4, 200,  // width, height
-        0xffffff));
-    t.gfxGroup.push(t.add.text(
-        -250, 110, 
-        "2m").setScale(6));
-
-    // Line of sight
-    if (t.showLos) {
-        line = new Phaser.Geom.Line(
-            0, offset, 
-            t.scale * (60000), offset);
-    } else {
-        line = null;
-    }
-
-    if (t.showTwo) {
-        line2 = new Phaser.Geom.Line(
-            0, offset, 
-            //t.scale * (60000), offset);
-            // xy
-            t.scale * (10000), offset+38);
-    } else {
-        line2 = null;
-    }
-
-    if (t.showRing) {
-        line3 = new Phaser.Geom.Line(
-            0, offset, 
-            //t.scale * (60000), offset);
-            // xy
-            t.scale * (10000), offset+96); // 15 moa = 38cm
-        line4 = new Phaser.Geom.Line(
-            0, offset, 
-            //t.scale * (60000), offset);
-            // xy
-            t.scale * (10000), offset-96);  // 68moa / 2 = 96cm
-    } else {
-        line3 = null;
-        line4 = null;
-    }
-
-        //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
-
-    // trajectory blocks
-    curves = [];
-    trajs = [
-        t.traj0,
-        t.traj1,
-        t.traj2,
-        t.traj3,
-    ];
-    for(var i=0; i < trajs.length; i++) {
-        if (! trajs[i]) {
-            continue;
-        }
-        makeDots(t, trajcetories[i].data);
-
-        // trajectory curve
-        points = [];
-        for (var key in trajcetories[i].data) {
-            value = trajcetories[i].data[key];
-
-            key = t.scale * (key * 100);
-            value = value * -1 + offset;
-            points.push(new Phaser.Math.Vector2(key, value));
-        }
-        curves.push(new Phaser.Curves.Spline(points));
-    }
-}
-
-function makeEnemy(t, item) {
-    var enemyWidthScale = 1.0;  // was: t.scale
-
-    // head
-    t.gfxGroup.push(t.add.rectangle(
-        t.scale * (item * 100), -80, // xy
-        enemyWidthScale * (20), 40,  // width, height
-        0x666622));
-    // legs
-    t.gfxGroup.push(t.add.rectangle(
-        t.scale * (item * 100), 60, // xy
-        enemyWidthScale * (30), 80,  // width, height
-        0x1166ff));
-    // body
-    t.gfxGroup.push(t.add.rectangle(
-        t.scale * (item * 100), -20, // xy
-        enemyWidthScale * (50), 100,  // width, height
-        0x6622ff));
-}
-
-function makeDots(t, data) {
-    //for (var key in trajcetories[i].data) {
-    for (var key in data) {
-        value = data[key];
-
-        // use cm here
-        t.gfxGroup.push(t.add.rectangle(
-            t.scale * (key * 100), value * -1 + offset, // xy
-            t.scale * (100), 1,  // width, height
-            0xff0000));
-    }
-}
-
-function makeNr(t, item) {
-    var s = 0;
-        if (t.scale > 0.5) {
-            s = 10;
-        } else if (t.scale >= 0.1) {
-            s = 5;
-        } else {
-            s = 3;
-        }
-        t.gfxGroup.push(t.add.text(
-            t.scale * ((item*100))-50, 100, 
-            item.toString()).setScale(s)
-        );
-}
-
-function update (time, delta)
+// Phaser: Update
+function update(time, delta)
 {
     if (this.reload) {
         this.gfxGroup.forEach(function (item, index) {
@@ -441,6 +327,153 @@ function update (time, delta)
     graphics.clear();
     drawLines(graphics);
 }
+
+
+/**************************************/
+
+function resetGfx() {
+    data.gfxGroup.forEach(function (item, index) {
+            item.destroy();
+        });
+    createGfx();
+}
+
+function createGfx() {
+    data.gfxGroup = [];
+    enemyLocations.forEach(function (item, index) {
+        if (item == 10 && !uiConfig.show10m) {
+            return;
+        }
+        makeEnemy(item);
+        if (item > 0) {
+            makeNr(item);
+        }
+    }.bind(this));
+
+    // height
+    data.gfxGroup.push(game.add.rectangle(
+        -200, 0, // xy
+        4, 200,  // width, height
+        0xffffff));
+    data.gfxGroup.push(game.add.text(
+        -250, 110, 
+        "2m").setScale(6));
+
+    // Line of sight
+    if (uiConfig.showLos) {
+        line = new Phaser.Geom.Line(
+            0, offset, 
+            uiConfig.scale * (60000), offset);
+    } else {
+        line = null;
+    }
+
+    if (uiConfig.showTwo) {
+        line2 = new Phaser.Geom.Line(
+            0, offset, 
+            //uiConfig.scale * (60000), offset);
+            // xy
+            uiConfig.scale * (10000), offset+38);
+    } else {
+        line2 = null;
+    }
+
+    if (uiConfig.showRing) {
+        line3 = new Phaser.Geom.Line(
+            0, offset, 
+            //uiConfig.scale * (60000), offset);
+            // xy
+            uiConfig.scale * (10000), offset+96); // 15 moa = 38cm
+        line4 = new Phaser.Geom.Line(
+            0, offset, 
+            //uiConfig.scale * (60000), offset);
+            // xy
+            uiConfig.scale * (10000), offset-96);  // 68moa / 2 = 96cm
+    } else {
+        line3 = null;
+        line4 = null;
+    }
+
+        //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
+
+    // trajectory blocks
+    curves = [];
+    trajs = [
+        uiConfig.trajEnabled[0],
+        uiConfig.trajEnabled[1],
+        uiConfig.trajEnabled[2],
+        uiConfig.trajEnabled[3],
+    ];
+    for(var i=0; i < trajs.length; i++) {
+        if (! trajs[i]) {
+            continue;
+        }
+        makeDots(trajcetories[i].data);
+
+        // trajectory curve
+        points = [];
+        for (var key in trajcetories[i].data) {
+            value = trajcetories[i].data[key];
+
+            key = uiConfig.scale * (key * 100);
+            value = value * -1 + offset;
+            points.push(new Phaser.Math.Vector2(key, value));
+        }
+        curves.push(new Phaser.Curves.Spline(points));
+    }
+}
+
+
+function makeEnemy(item) {
+    var enemyWidthScale = 1.0;  // was: uiConfig.scale
+
+    // head
+    data.gfxGroup.push(game.add.rectangle(
+        uiConfig.scale * (item * 100), -80, // xy
+        enemyWidthScale * (20), 40,  // width, height
+        0x666622));
+    // legs
+    data.gfxGroup.push(game.add.rectangle(
+        uiConfig.scale * (item * 100), 60, // xy
+        enemyWidthScale * (30), 80,  // width, height
+        0x1166ff));
+    // body
+    data.gfxGroup.push(game.add.rectangle(
+        uiConfig.scale * (item * 100), -20, // xy
+        enemyWidthScale * (50), 100,  // width, height
+        0x6622ff));
+}
+
+
+function makeDots(dotsData) {
+    //for (var key in trajcetories[i].data) {
+    for (var key in dotsData) {
+        value = dotsData[key];
+
+        // use cm here
+        data.gfxGroup.push(game.add.rectangle(
+            uiConfig.scale * (key * 100), value * -1 + offset, // xy
+            uiConfig.scale * (100), 1,  // width, height
+            0xff0000));
+    }
+}
+
+
+function makeNr(item) {
+    var s = 0;
+        if (uiConfig.scale > 0.5) {
+            s = 10;
+        } else if (uiConfig.scale >= 0.1) {
+            s = 5;
+        } else {
+            s = 3;
+        }
+        data.gfxGroup.push(game.add.text(
+            uiConfig.scale * ((item*100))-50, 100, 
+            item.toString()).setScale(s)
+        );
+}
+
 
 function drawLines(graphics) {
     // los, white
