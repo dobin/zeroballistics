@@ -169,11 +169,16 @@ function createGfx() {
     }
 
     if (uiConfig.showTwo) {
+        var reverse = 1;
+        if (uiConfig.topDotZero == false) {
+            reverse = -1;
+        }
+
         data.lineExps = new Phaser.Geom.Line(
             0, config.offset, 
             //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (10000), config.offset+38);
+            uiConfig.scale * (2*10000), config.offset+(reverse * (2*38)));
     } else {
         data.lineExps = null;
     }

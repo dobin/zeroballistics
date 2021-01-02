@@ -102,6 +102,10 @@ function initGui() {
         uiConfig.colorTwoG = rgbToHex(uiConfig.colorTwo[0], uiConfig.colorTwo[1], uiConfig.colorTwo[2]);
         resetGfx();
     }.bind(this));
+    topDotZeroCtrl = gui.add(uiConfig, 'topDotZero').name("topDotZero");
+    topDotZeroCtrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
 }
 
 
