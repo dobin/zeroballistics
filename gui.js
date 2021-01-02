@@ -33,77 +33,83 @@ var uiConfig = new UiConfig();
 
 function initGui() {
     var gui = new dat.GUI({ 
-        width: 400,
+        width: 600,
         closed: false,
     });
     //var guiLevel = gui.addFolder('defaults');
-    scaleCtrl = gui.add(uiConfig, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
+    scaleCtrl = gui.add(uiConfig, 'scaleUi', 1, 100).name('Horicontal scale factor in percent').min(1).max(100);
     scaleCtrl.onFinishChange(function(value) {
         value = value / 100;
         uiConfig.scale = value;
         resetGfx();
     }.bind(this));
 
+    var f1 = gui.addFolder("Select trajectory based on zero distance and calibre")
+
     uiConfig.traj0 = false;
-    traj0ctrl = gui.add(uiConfig, 'traj0').name(trajcetories[0].title);
+    traj0ctrl = f1.add(uiConfig, 'traj0').name(trajcetories[0].title);
     traj0ctrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
 
     uiConfig.traj1 = false;
-    traj1ctrl = gui.add(uiConfig, 'traj1').name(trajcetories[1].title);
+    traj1ctrl = f1.add(uiConfig, 'traj1').name(trajcetories[1].title);
     traj1ctrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
 
     uiConfig.traj2 = true;
-    traj2ctrl = gui.add(uiConfig, 'traj2').name(trajcetories[2].title);
+    traj2ctrl = f1.add(uiConfig, 'traj2').name(trajcetories[2].title);
     traj2ctrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
 
     uiConfig.traj3 = false;
-    traj3ctrl = gui.add(uiConfig, 'traj3').name(trajcetories[3].title);
+    traj3ctrl = f1.add(uiConfig, 'traj3').name(trajcetories[3].title);
     traj3ctrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
 
-    show10mCtrl = gui.add(uiConfig, 'show10m').name("show10m");
-    show10mCtrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
+    var f2 = gui.addFolder("Select optic options")
 
-    showLosCtrl = gui.add(uiConfig, 'showLos').name("showLos");
+    showLosCtrl = f2.add(uiConfig, 'showLos').name("Line Of Sight (LOS) indicator enabled?");
     showLosCtrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
-    colorLosCtrl = gui.addColor(uiConfig, 'colorLos').name("colorLos");
+    colorLosCtrl = f2.addColor(uiConfig, 'colorLos').name("Line Of Sight (LOS) color");
     colorLosCtrl.onChange(function(value) {
         uiConfig.colorLosG = rgbToHex(uiConfig.colorLos[0], uiConfig.colorLos[1], uiConfig.colorLos[2]);
         resetGfx();
     }.bind(this));
 
-    showRingCtrl = gui.add(uiConfig, 'showRing').name("showRing");
+    showRingCtrl = f2.add(uiConfig, 'showRing').name("68MOA EOTECH reticle enabled?");
     showRingCtrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
-    colorRingCtrl = gui.addColor(uiConfig, 'colorRing').name("colorRing");
+    colorRingCtrl = f2.addColor(uiConfig, 'colorRing').name("68MOA EOTECH reticle color");
     colorRingCtrl.onChange(function(value) {
         uiConfig.colorRingG = rgbToHex(uiConfig.colorRing[0], uiConfig.colorRing[1], uiConfig.colorRing[2]);
         resetGfx();
     }.bind(this));
 
-    showTwoCtrl = gui.add(uiConfig, 'showTwo').name("showTwo");
+    showTwoCtrl = f2.add(uiConfig, 'showTwo').name("EOTECH EXPS2-2 2nd dot (15MOA distance) enabled?");
     showTwoCtrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
-    colorTwoCtrl = gui.addColor(uiConfig, 'colorTwo').name("colorTwo");
+    colorTwoCtrl = f2.addColor(uiConfig, 'colorTwo').name("EOTECH EXPS2-2 2nd dot color");
     colorTwoCtrl.onChange(function(value) {
         uiConfig.colorTwoG = rgbToHex(uiConfig.colorTwo[0], uiConfig.colorTwo[1], uiConfig.colorTwo[2]);
         resetGfx();
     }.bind(this));
-    topDotZeroCtrl = gui.add(uiConfig, 'topDotZero').name("topDotZero");
+    topDotZeroCtrl = f2.add(uiConfig, 'topDotZero').name("EOTECH EXPS2-2 is center dot zeroed?");
     topDotZeroCtrl.onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    var f2 = gui.addFolder("Other")
+
+    show10mCtrl = f2.add(uiConfig, 'show10m').name("Show enemy at 10m distance?");
+    show10mCtrl.onChange(function(value) {
         resetGfx();
     }.bind(this));
 }
