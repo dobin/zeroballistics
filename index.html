@@ -41,6 +41,8 @@ var UiConfig = function() {
     this.showRing = false;
     this.showTwo = false;
     this.topDotZero = true;
+
+    this.showEnemies = true;
 }
 var uiConfig = new UiConfig();
 
@@ -57,6 +59,9 @@ var data = {
     lineRing2: null,
 
     trajCurves: null,
+
+    points: [],
+    showDebug: false,
 };
 
 
@@ -187,7 +192,7 @@ var trajcetories = [
     },
 ];
 var enemyLocations = [
-    -3,
+    0,
     10,
     25,
     50,
@@ -217,7 +222,7 @@ function initGui() {
     scaleCtrl = gui.add(uiConfig, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
     scaleCtrl.onFinishChange(function(value) {
         value = value / 100;
-        this.scale = value;
+        uiConfig.scale = value;
         resetGfx();
     }.bind(this));
 
@@ -282,18 +287,22 @@ function create()
     graphics = this.add.graphics();
     this.cameras.main.zoom = 0.5;
     createGfx();
+    this.cameras.main.centerOnY(-400);
+    this.cameras.main.centerOnX(1100);
 
     /* zoom */
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+        //this.cameras.main.centerOn(pointer.worldX, pointer.worldY);
+
         z = this.cameras.main.zoom;
         if (deltaY < 0) {
             this.cameras.main.zoom += (z/2);
         } else {
             this.cameras.main.zoom -= (z/2);
         }
-        this.cameras.main.centerToBounds();
-        //this.cameras.main.centerOnY(-600);
-        //this.cameras.main.centerOn(pointer.worldX, pointer.worldY);
+        //this.cameras.main.centerToBounds();
+        //
+        //
     });
 }
 
@@ -348,15 +357,18 @@ function resetGfx() {
 
 function createGfx() {
     data.gfxGroup = [];
-    enemyLocations.forEach(function (item, index) {
-        if (item == 10 && !uiConfig.show10m) {
-            return;
-        }
-        makeEnemy(item);
-        if (item > 0) {
-            makeNr(item);
-        }
-    }.bind(this));
+
+    if (uiConfig.showEnemies) {
+        enemyLocations.forEach(function (item, index) {
+            if (item == 10 && !uiConfig.show10m) {
+                return;
+            }
+            makeEnemy(item);
+            if (item > 0) {
+                makeNr(item);
+            }
+        }.bind(this));
+    }
 
     // height
     data.gfxGroup.push(game.add.rectangle(
@@ -419,15 +431,16 @@ function createGfx() {
         makeDots(trajcetories[i].data);
 
         // trajectory curve
-        points = [];
+        data.points = [];
         for (var key in trajcetories[i].data) {
             value = trajcetories[i].data[key];
 
             key = uiConfig.scale * (key * 100);
             value = value * -1 + config.offset;
-            points.push(new Phaser.Math.Vector2(key, value));
+            data.points.push(new Phaser.Math.Vector2(key, value));
         }
-        data.trajCurves.push(new Phaser.Curves.Spline(points));
+        //data.trajCurves.push(new Phaser.Curves.CubicBezier(data.points));
+        data.trajCurves.push(new Phaser.Curves.Spline(data.points));
     }
 }
 
@@ -454,10 +467,12 @@ function makeEnemy(item) {
 
 
 function makeDots(dotsData) {
-    //for (var key in trajcetories[i].data) {
     for (var key in dotsData) {
+        // FIXME - do not do this here, but in caller function
+        if (key == 0) {
+            continue;
+        }
         value = dotsData[key];
-
         // use cm here
         data.gfxGroup.push(game.add.rectangle(
             uiConfig.scale * (key * 100), value * -1 + config.offset, // xy
@@ -484,23 +499,39 @@ function makeNr(item) {
 
 
 function drawLines(graphics) {
+    if (data.showDebug) {
+        for (var i = 0; i < data.points.length; i++)
+        {
+            graphics.fillStyle(0x00ff00, 1);
+            graphics.fillCircle(data.points[i].x, data.points[i].y, 4);
+        }
+    }
+
     // los, white
     if (data.lineLos != null) {
         graphics.lineStyle(2, 0xffffff, 1);
         graphics.strokeLineShape(data.lineLos);
+        //graphics.lineBetween(0, config.offset, 
+        //    uiConfig.scale * (60000), config.offset);
     }
 
     // exps, grey-yellow
     if (data.lineExps != null) {
         graphics.lineStyle(2, 0xffff99, 1);
         graphics.strokeLineShape(data.lineExps);
+        //graphics.lineBetween(0, config.offset, 
+        //    uiConfig.scale * (10000), config.offset+38);
     }
 
     // ring, grey
     if (data.lineRing1 != null) {
         graphics.lineStyle(2, 0x686868, 1);
         graphics.strokeLineShape(data.lineRing1);
+        //graphics.lineBetween(0, config.offset, 
+        //    uiConfig.scale * (10000), config.offset+96);
         graphics.strokeLineShape(data.lineRing2);
+        //graphics.lineBetween(0, config.offset, 
+        //    uiConfig.scale * (10000), config.offset-96);
     }
 
     // trajectories, red
