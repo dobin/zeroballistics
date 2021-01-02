@@ -24,18 +24,19 @@ function makeEnemy(item) {
 }
 
 
-function makeDots(dotsData) {
+function makeDots(dotsData, color) {
     for (var key in dotsData) {
         // FIXME - do not do this here, but in caller function
         if (key == 0) {
             continue;
         }
         value = dotsData[key];
+        
         // use cm here
         data.gfxGroup.push(game.add.rectangle(
             uiConfig.scale * (key * 100), value * -1 + config.offset, // xy
             uiConfig.scale * (100), 1,  // width, height
-            0xff0000));
+            color));
     }
 }
 

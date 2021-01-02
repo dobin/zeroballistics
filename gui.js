@@ -60,6 +60,10 @@ function initGui() {
     f1.add(uiConfig, 'traj3').name(trajcetories[3].title).onChange(function(value) {
         resetGfx();
     }.bind(this));
+    f1.addColor(uiConfig, 'trajColor').name("Bullet trajectory color").onChange(function(value) {
+        uiConfig.trajColorG = rgbToHex(uiConfig.trajColor[0], uiConfig.trajColor[1], uiConfig.trajColor[2]);
+        resetGfx();
+    }.bind(this));
 
     f1.add(uiConfig, 'show2ndDotTraj').name("Also show interpolated trajectory of the 2nd dot").onChange(function(value) {
         resetGfx();

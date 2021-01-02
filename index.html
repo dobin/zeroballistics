@@ -213,7 +213,7 @@ function createGfx() {
         if (! trajs[i]) {
             continue;
         }
-        makeDots(trajcetories[i].data);
+        makeDots(trajcetories[i].data, uiConfig.trajColorG);
 
         // trajectory curve
         data.points = [];
@@ -267,7 +267,7 @@ function drawLines(graphics) {
     }
 
     // trajectories, red
-    graphics.lineStyle(2, 0xff0000, 1);
+    graphics.lineStyle(2, uiConfig.trajColorG, 1);
     for(var i=0; i<data.trajCurves.length; i++) {
         data.trajCurves[i].draw(graphics);
     }
