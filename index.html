@@ -3,6 +3,9 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
     <script src="https://labs.phaser.io/js/datgui.js"></script>
+    <script src="gui.js"></script>
+    <script src="gfxentities.js"></script>
+    <script src="staticdata.js"></script>
 </head>
 <body>
 
@@ -23,29 +26,6 @@ var config = {
     offset: -50,
 };
 
-
-// Dynamic Config
-var UiConfig = function() {
-    this.reload = false;
-
-    this.traj0 = false;
-    this.traj1 = false;
-    this.traj2 = true;
-    this.traj3 = false;
-
-    this.scaleUi = 10;
-    this.scale = 0.1;
-
-    this.show10m = false;
-    this.showLos = true;
-    this.showRing = false;
-    this.showTwo = false;
-    this.topDotZero = true;
-
-    this.showEnemies = true;
-}
-var uiConfig = new UiConfig();
-
 // The game
 var game = null;
 
@@ -65,211 +45,11 @@ var data = {
 };
 
 
-var trajcetories = [
-    {
-        'link': '',
-        'title': '556 25yards',
-        'data': {
-            0: -9.398,
-            25: -0.0508,
-            50: 8.509,
-            75: 16.3322,
-            100: 23.368,
-            125: 29.6164,
-            150: 34.9758,
-            175: 39.4716,
-            200: 43.0276,
-            225: 45.593,
-            250: 47.117,
-            275: 47.5742,
-            300: 46.8884,
-            325: 45.0342,
-            350: 41.91,
-            375: 37.4396,
-            400: 31.5976,
-            425: 24.3078,
-            450: 15.4686,
-            475: 4.9784,
-            500: -7.2136,
-            525: -21.209,
-            550: -37.1094,
-            575: -55.0418,
-            600: -75.1078,
-        },
-    },
-    {
-        'link': '',
-        'title': '556 37yards',
-        'data': {
-            0: -9.398,
-            25: -2.8956,
-            50: 2.8702,
-            75: 7.874,
-            100: 12.1158,
-            125: 15.5194,
-            150: 18.0848,
-            175: 19.7612,
-            200: 20.4978,
-            225: 20.2692,
-            250: 18.9738,
-            275: 16.637,
-            300: 13.1318,
-            325: 8.4582,
-            350: 2.5146,
-            375: -4.7498,
-            400: -13.4112,
-            425: -23.5204,
-            450: -35.179,
-            475: -48.4632,
-            500: -63.4746,
-            525: -80.2894,
-            550: -99.0092,
-            575: -119.736,
-            600: -142.621,
-        },
-    },
-    {
-        'link': '',
-        'title': '556 50yards',
-        'data': {
-            0: -9.398,
-            25: -2.8956,
-            50: 2.8702,
-            75: 7.874,
-            100: 12.1158,
-            125: 15.5194,
-            150: 18.0848,
-            175: 19.7612,
-            200: 20.4978,
-            225: 20.2692,
-            250: 18.9738,
-            275: 16.637,
-            300: 13.1318,
-            325: 8.4582,
-            350: 2.5146,
-            375: -4.7498,
-            400: -13.4112,
-            425: -23.5204,
-            450: -35.179,
-            475: -48.4632,
-            500: -63.4746,
-            525: -80.2894,
-            550: -99.0092,
-            575: -119.736,
-            600: -142.621,
-        },
-    },
-    {
-        'link': '',
-        'title': '556 100yards',
-        'data': {
-            0: -9.398,
-            25: -5.9436,
-            50: -3.2004,
-            75: -1.2192,
-            100: -0.0254,
-            125: 0.381,
-            150: -0.0762,
-            175: -1.4224,
-            200: -3.7338,
-            225: -6.985,
-            250: -11.303,
-            275: -16.6878,
-            300: -23.1902,
-            325: -30.9118,
-            350: -39.878,
-            375: -50.165,
-            400: -61.849,
-            425: -74.9808,
-            450: -89.662,
-            475: -105.969,
-            500: -124.003,
-            525: -143.84,
-            550: -165.583,
-            575: -189.357,
-            600: -215.24,
-        },
-    },
-];
-var enemyLocations = [
-    0,
-    10,
-    25,
-    50,
-    100,
-    150,
-    200,
-    250,
-    300,
-    400,
-    500
-];  // in meters
-
-
 // Start here
 window.onload = function() {
     initGui();
     new Phaser.Game(config);
 };
-
-
-function initGui() {
-    var gui = new dat.GUI({ 
-        width: 400,
-        closed: false,
-    });
-    //var guiLevel = gui.addFolder('defaults');
-    scaleCtrl = gui.add(uiConfig, 'scaleUi', 1, 100).name('Scale').min(1).max(100);
-    scaleCtrl.onFinishChange(function(value) {
-        value = value / 100;
-        uiConfig.scale = value;
-        resetGfx();
-    }.bind(this));
-
-    uiConfig.traj0 = false;
-    traj0ctrl = gui.add(uiConfig, 'traj0').name(trajcetories[0].title);
-    traj0ctrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    uiConfig.traj1 = false;
-    traj1ctrl = gui.add(uiConfig, 'traj1').name(trajcetories[1].title);
-    traj1ctrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    uiConfig.traj2 = true;
-    traj2ctrl = gui.add(uiConfig, 'traj2').name(trajcetories[2].title);
-    traj2ctrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    uiConfig.traj3 = false;
-    traj3ctrl = gui.add(uiConfig, 'traj3').name(trajcetories[3].title);
-    traj3ctrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    show10mCtrl = gui.add(uiConfig, 'show10m').name("show10m");
-    show10mCtrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    showLosCtrl = gui.add(uiConfig, 'showLos').name("showLos");
-    showLosCtrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    showRingCtrl = gui.add(uiConfig, 'showRing').name("showRing");
-    showRingCtrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-
-    showTwoCtrl = gui.add(uiConfig, 'showTwo').name("showTwo");
-    showTwoCtrl.onChange(function(value) {
-        resetGfx();
-    }.bind(this));
-}
 
 
 // Phaser Preload
@@ -445,59 +225,6 @@ function createGfx() {
 }
 
 
-function makeEnemy(item) {
-    var enemyWidthScale = 1.0;  // was: uiConfig.scale
-
-    // head
-    data.gfxGroup.push(game.add.rectangle(
-        uiConfig.scale * (item * 100), -80, // xy
-        enemyWidthScale * (20), 40,  // width, height
-        0x666622));
-    // legs
-    data.gfxGroup.push(game.add.rectangle(
-        uiConfig.scale * (item * 100), 60, // xy
-        enemyWidthScale * (30), 80,  // width, height
-        0x1166ff));
-    // body
-    data.gfxGroup.push(game.add.rectangle(
-        uiConfig.scale * (item * 100), -20, // xy
-        enemyWidthScale * (50), 100,  // width, height
-        0x6622ff));
-}
-
-
-function makeDots(dotsData) {
-    for (var key in dotsData) {
-        // FIXME - do not do this here, but in caller function
-        if (key == 0) {
-            continue;
-        }
-        value = dotsData[key];
-        // use cm here
-        data.gfxGroup.push(game.add.rectangle(
-            uiConfig.scale * (key * 100), value * -1 + config.offset, // xy
-            uiConfig.scale * (100), 1,  // width, height
-            0xff0000));
-    }
-}
-
-
-function makeNr(item) {
-    var s = 0;
-        if (uiConfig.scale > 0.5) {
-            s = 10;
-        } else if (uiConfig.scale >= 0.1) {
-            s = 5;
-        } else {
-            s = 3;
-        }
-        data.gfxGroup.push(game.add.text(
-            uiConfig.scale * ((item*100))-50, 100, 
-            item.toString()).setScale(s)
-        );
-}
-
-
 function drawLines(graphics) {
     if (data.showDebug) {
         for (var i = 0; i < data.points.length; i++)
@@ -509,7 +236,7 @@ function drawLines(graphics) {
 
     // los, white
     if (data.lineLos != null) {
-        graphics.lineStyle(2, 0xffffff, 1);
+        graphics.lineStyle(2, uiConfig.colorLosG, 1);
         graphics.strokeLineShape(data.lineLos);
         //graphics.lineBetween(0, config.offset, 
         //    uiConfig.scale * (60000), config.offset);
@@ -517,7 +244,7 @@ function drawLines(graphics) {
 
     // exps, grey-yellow
     if (data.lineExps != null) {
-        graphics.lineStyle(2, 0xffff99, 1);
+        graphics.lineStyle(2, uiConfig.colorTwoG, 1);
         graphics.strokeLineShape(data.lineExps);
         //graphics.lineBetween(0, config.offset, 
         //    uiConfig.scale * (10000), config.offset+38);
@@ -525,7 +252,7 @@ function drawLines(graphics) {
 
     // ring, grey
     if (data.lineRing1 != null) {
-        graphics.lineStyle(2, 0x686868, 1);
+        graphics.lineStyle(2, uiConfig.colorRingG, 1);
         graphics.strokeLineShape(data.lineRing1);
         //graphics.lineBetween(0, config.offset, 
         //    uiConfig.scale * (10000), config.offset+96);
