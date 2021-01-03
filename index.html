@@ -29,6 +29,7 @@ var config = {
 
 // The game
 var game = null;
+var graphics = null;
 
 // Runtime Data
 var data = {
@@ -253,6 +254,9 @@ function createGfx() {
     }
 
     /* IMPORTANT to have it here */
+    if (graphics != null) {
+        graphics.destroy();
+    }
     graphics = game.add.graphics();
     graphics.z = 1;
 }
@@ -278,12 +282,16 @@ function drawReticle(graphics) {
     var thickness = 4;
     var alpha = 1;
 
-    graphics.lineStyle(thickness, color, alpha);
 
+    graphics.lineStyle(thickness, uiConfig.colorRingG, alpha);
     var a = new Phaser.Geom.Point(centerX, centerY);
     var radius = 86; // 68 moa / 2 in cm
     graphics.strokeCircle(a.x, a.y, radius);
+
+    graphics.fillStyle(uiConfig.colorLosG, 1.0);
     graphics.fillRect(centerX-2, centerY-2, 4, 4);
+
+    graphics.fillStyle(uiConfig.colorTwoG, 1.0);
     graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
 
 }
@@ -316,6 +324,7 @@ function drawLines(graphics) {
 
     // ring, grey
     if (data.lineRing1 != null) {
+        console.log("Print 4rint");
         graphics.lineStyle(2, uiConfig.colorRingG, 1);
         graphics.strokeLineShape(data.lineRing1);
         //graphics.lineBetween(0, config.offset, 
