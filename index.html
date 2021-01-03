@@ -46,6 +46,10 @@ var data = {
     showDebug: false,
 
     reticleEnemy: null,
+
+    pointerWorldX: 0,
+    trajImpactShow: false,
+    trajImpactX: 0,
 };
 
 
@@ -53,6 +57,7 @@ var data = {
 window.onload = function() {
     initGui();
     new Phaser.Game(config);
+    //canvas.oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
 };
 
 
@@ -88,7 +93,26 @@ function create()
         //
         //
     });
+/*
+    this.input.on('pointermove', function (pointer)
+    {
+        data.pointerWorldX = pointer.worldX;
+        //console.log(pointer.worldX, pointer.y);
+    }, this);
+*/
+    /*
+    this.input.on('pointerdown', function (pointer) {
+        if (data.trajImpactShow) {
+            data.trajImpactShow = false;
+        } else {
+            data.trajImpactShow = true;
+        }
+//        console.log('down');
+//        resetGfx();
+    }, this);
+    */
 }
+
 
 // Phaser: Update
 function update(time, delta)
@@ -294,8 +318,47 @@ function drawReticle(graphics) {
     graphics.fillStyle(uiConfig.colorTwoG, 1.0);
     graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
 
+    if (data.trajImpactShow) {
+        var traj = getTraj();
+        var closestX = closest(data.pointerWorldX/10, enemyLocations);
+        var trajY = traj[closestX];
+        
+        /* on trajectory */
+        graphics.fillStyle(0xbb883f, 1.0);
+        graphics.fillRect(
+            (closestX * 10) - 2, 
+            (trajY * -1 + config.offset) - 2, 
+            4, 
+            4);
+
+
+        /* on reticle */
+        graphics.fillStyle(uiConfig.trajColorG, 1.0);
+        graphics.fillRect(
+            centerX - 2, 
+            centerY - 2 - trajY, 
+            4, 
+            4);
+    }
 }
 
+function getTraj() {
+    return trajcetories[1].data;
+}
+
+// https://stackoverflow.com/questions/8584902/get-the-closest-number-out-of-an-array
+function closest (num, arr) {
+    var curr = arr[0];
+    var diff = Math.abs (num - curr);
+    for (var val = 0; val < arr.length; val++) {
+        var newdiff = Math.abs (num - arr[val]);
+        if (newdiff < diff) {
+            diff = newdiff;
+            curr = arr[val];
+        }
+    }
+    return curr;
+}
 
 function drawLines(graphics) {
     if (data.showDebug) {
@@ -324,7 +387,6 @@ function drawLines(graphics) {
 
     // ring, grey
     if (data.lineRing1 != null) {
-        console.log("Print 4rint");
         graphics.lineStyle(2, uiConfig.colorRingG, 1);
         graphics.strokeLineShape(data.lineRing1);
         //graphics.lineBetween(0, config.offset, 

@@ -4,10 +4,21 @@ function makeLine(item) {
 
 
 function makeEnemy(item) {
-    data.gfxGroup.push(game.add.image(
+    var enemy = game.add.image(
         uiConfig.scale * ((item * 100) - 20), 
         uiConfig.enemyOffset,
-        'enemy'));
+        'enemy');
+    enemy.setInteractive();
+    enemy.on('pointerdown', function (pointer) {
+        data.pointerWorldX = pointer.worldX;
+        if (data.trajImpactShow) {
+            //var closestX = closest(data.pointerWorldX/10, enemyLocations);
+            data.trajImpactShow = false;
+        } else {
+            data.trajImpactShow = true;
+        }
+    });
+    data.gfxGroup.push(enemy);
 /*
     // head
     data.gfxGroup.push(game.add.rectangle(
@@ -25,6 +36,9 @@ function makeEnemy(item) {
         enemyWidthScale * (50), 100,  // width, height
         0x6622ff));*/
 }
+
+
+
 
 
 function makeDots(dotsData, color) {
