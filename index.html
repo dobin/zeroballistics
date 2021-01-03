@@ -318,22 +318,24 @@ function drawReticle(graphics) {
     graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
 
     if (data.trajImpactShow) {
-        var r = 4;
+        var r1 = 8;
+        var r2 = 4;
+
         /* on trajectory */
         graphics.fillStyle(uiConfig.trajColorG, 1.0);
         graphics.fillRect(
-            (data.trajImpactX * 10) - (r/2), 
-            (data.trajImpactY * -1 + config.offset) - (r/2), 
-            r, 
-            r);
+            (data.trajImpactX * 10) - (r1/2), 
+            (data.trajImpactY * -1 + config.offset) - (r1/2), 
+            r1, 
+            r1);
 
         /* on reticle */
         graphics.fillStyle(uiConfig.trajColorG, 1.0);
         graphics.fillRect(
-            centerX - (r/2), 
-            centerY - (r/2) - data.trajImpactY, 
-            r, 
-            r);
+            centerX - (r2/2), 
+            centerY - (r2/2) - data.trajImpactY, 
+            r2, 
+            r2);
     }
 }
 
