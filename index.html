@@ -201,12 +201,12 @@ function createGfx() {
             0, config.offset, 
             //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (10000), config.offset+96); // 15 moa = 38cm
+            uiConfig.scale * (2*10000), config.offset+(2*96)); // 15 moa = 38cm
         data.lineRing2 = new Phaser.Geom.Line(
             0, config.offset, 
             //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (10000), config.offset-96);  // 68moa / 2 = 96cm
+            uiConfig.scale * (2*10000), config.offset-(2*96));  // 68moa / 2 = 96cm
     } else {
         data.lineRing1 = null;
         data.lineRing2 = null;
