@@ -15,7 +15,8 @@ var config = {
     type: Phaser.AUTO,
     width: 1440,
     height: 800,
-    backgroundColor: '#010101',
+    //backgroundColor: '#788878',
+    backgroundColor: '#708e72',
     parent: 'phaser-example',
     scene: {
         preload: preload,
@@ -23,7 +24,7 @@ var config = {
         update: update
     },
 
-    offset: -50,
+    offset: -84,
 };
 
 // The game
@@ -55,9 +56,9 @@ window.onload = function() {
 // Phaser Preload
 function preload ()
 {
-    //this.load.image('lemming', 'assets/sprites/lemming.png');
+    this.load.image('lemming', '17966.png');
+    this.load.image('enemy', '321184.png');
     //this.load.spritesheet('dragcircle', 'assets/sprites/dragcircle.png', { frameWidth: 16 });
-
 }
 
 // Phaser Create
@@ -138,6 +139,14 @@ function resetGfx() {
 function createGfx() {
     data.gfxGroup = [];
 
+    if (uiConfig.showDebug) {
+        data.gfxGroup.push(game.add.rectangle(
+            0, 0, // xy
+            1, 200,  // width, height
+            0xffffff));
+    }
+
+    data.gfxGroup.push(game.add.image(-1 * 71, 0, 'lemming'));
     if (uiConfig.showEnemies) {
         enemyLocations.forEach(function (item, index) {
             if (item == 10 && !uiConfig.show10m) {
@@ -162,7 +171,7 @@ function createGfx() {
     // Line of sight
     if (uiConfig.showLos) {
         data.lineLos = new Phaser.Geom.Line(
-            0, config.offset, 
+            -50, config.offset, 
             uiConfig.scale * (60000), config.offset);
     } else {
         data.lineLos = null;

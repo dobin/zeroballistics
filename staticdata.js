@@ -126,7 +126,7 @@ var trajcetories = [
     },
 ];
 var enemyLocations = [
-    0,
+    //0,
     10,
     25,
     50,

@@ -17,8 +17,8 @@ var UiConfig = function() {
     this.show10m = false;
 
     this.showLos = true;
-    this.colorLos = [ 0xFF, 0xFF, 0xFF ];
-    this.colorLosG = 0xFFFFFF;
+    this.colorLos = [ 0xFF, 0xFF, 0x00 ];
+    this.colorLosG = 0xFFFF00;
 
     this.showRing = false;
     this.colorRing = [ 0x68, 0x68, 0x68 ];
