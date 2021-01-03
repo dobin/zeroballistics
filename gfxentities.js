@@ -10,13 +10,25 @@ function makeEnemy(item) {
         'enemy');
     enemy.setInteractive();
     enemy.on('pointerdown', function (pointer) {
-        data.pointerWorldX = pointer.worldX;
-        if (data.trajImpactShow) {
-            //var closestX = closest(data.pointerWorldX/10, enemyLocations);
-            data.trajImpactShow = false;
-        } else {
+        //data.pointerWorldX = pointer.worldX;
+        var a = getTrajY(pointer);
+        var closestX = a[0];
+        var trajY = a[1];
+
+        if (! data.trajImpactShow) {
             data.trajImpactShow = true;
         }
+
+        if (data.trajImpactX == closestX) {
+            data.trajImpactShow = false;
+            data.trajImpactY = 0;
+            data.trajImpactX = 0;
+            return;
+        }
+        
+        data.trajImpactY = trajY;
+        data.trajImpactX = closestX;
+        data.trajImpactShow = true;
     });
     data.gfxGroup.push(enemy);
 /*
@@ -38,7 +50,30 @@ function makeEnemy(item) {
 }
 
 
+function getTrajY(pointer) {
+    var traj = getTraj();
+    var closestX = closest(pointer.worldX/10, enemyLocations);
+    var trajY = traj[closestX];
+    return [closestX, trajY];
+}
 
+function getTraj() {
+    return trajcetories[1].data;
+}
+
+// https://stackoverflow.com/questions/8584902/get-the-closest-number-out-of-an-array
+function closest (num, arr) {
+    var curr = arr[0];
+    var diff = Math.abs (num - curr);
+    for (var val = 0; val < arr.length; val++) {
+        var newdiff = Math.abs (num - arr[val]);
+        if (newdiff < diff) {
+            diff = newdiff;
+            curr = arr[val];
+        }
+    }
+    return curr;
+}
 
 
 function makeDots(dotsData, color) {

@@ -47,9 +47,9 @@ var data = {
 
     reticleEnemy: null,
 
-    pointerWorldX: 0,
     trajImpactShow: false,
     trajImpactX: 0,
+    trajImpactY: 0,
 };
 
 
@@ -306,7 +306,6 @@ function drawReticle(graphics) {
     var thickness = 4;
     var alpha = 1;
 
-
     graphics.lineStyle(thickness, uiConfig.colorRingG, alpha);
     var a = new Phaser.Geom.Point(centerX, centerY);
     var radius = 86; // 68 moa / 2 in cm
@@ -319,45 +318,23 @@ function drawReticle(graphics) {
     graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
 
     if (data.trajImpactShow) {
-        var traj = getTraj();
-        var closestX = closest(data.pointerWorldX/10, enemyLocations);
-        var trajY = traj[closestX];
-        
+        var r = 4;
         /* on trajectory */
-        graphics.fillStyle(0xbb883f, 1.0);
+        graphics.fillStyle(uiConfig.trajColorG, 1.0);
         graphics.fillRect(
-            (closestX * 10) - 2, 
-            (trajY * -1 + config.offset) - 2, 
-            4, 
-            4);
-
+            (data.trajImpactX * 10) - (r/2), 
+            (data.trajImpactY * -1 + config.offset) - (r/2), 
+            r, 
+            r);
 
         /* on reticle */
         graphics.fillStyle(uiConfig.trajColorG, 1.0);
         graphics.fillRect(
-            centerX - 2, 
-            centerY - 2 - trajY, 
-            4, 
-            4);
+            centerX - (r/2), 
+            centerY - (r/2) - data.trajImpactY, 
+            r, 
+            r);
     }
-}
-
-function getTraj() {
-    return trajcetories[1].data;
-}
-
-// https://stackoverflow.com/questions/8584902/get-the-closest-number-out-of-an-array
-function closest (num, arr) {
-    var curr = arr[0];
-    var diff = Math.abs (num - curr);
-    for (var val = 0; val < arr.length; val++) {
-        var newdiff = Math.abs (num - arr[val]);
-        if (newdiff < diff) {
-            diff = newdiff;
-            curr = arr[val];
-        }
-    }
-    return curr;
 }
 
 function drawLines(graphics) {
