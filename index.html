@@ -21,7 +21,7 @@ var config = {
     scene: {
         preload: preload,
         create: create,
-        update: update
+        update: update,
     },
 
     offset: -84,
@@ -43,6 +43,8 @@ var data = {
 
     points: [],
     showDebug: false,
+
+    reticleEnemy: null,
 };
 
 
@@ -65,13 +67,13 @@ function preload ()
 function create()
 {
     game = this;
-    graphics = this.add.graphics();
+    createGfx(); 
+
+    /* zoom */
     this.cameras.main.zoom = 0.5;
-    createGfx();
     this.cameras.main.centerOnY(-400);
     this.cameras.main.centerOnX(1100);
 
-    /* zoom */
     this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
         //this.cameras.main.centerOn(pointer.worldX, pointer.worldY);
 
@@ -102,6 +104,7 @@ function update(time, delta)
 
     graphics.clear();
     drawLines(graphics);
+    drawReticle(graphics);
 }
 
 
@@ -139,6 +142,7 @@ function resetGfx() {
 function createGfx() {
     data.gfxGroup = [];
 
+    // Debug
     if (uiConfig.showDebug) {
         data.gfxGroup.push(game.add.rectangle(
             0, 0, // xy
@@ -146,7 +150,10 @@ function createGfx() {
             0xffffff));
     }
 
+    // Player
     data.gfxGroup.push(game.add.image(-1 * 71, 0, 'lemming'));
+
+    // Enemy
     if (uiConfig.showEnemies) {
         enemyLocations.forEach(function (item, index) {
             if (item == 10 && !uiConfig.show10m) {
@@ -159,7 +166,10 @@ function createGfx() {
         }.bind(this));
     }
 
-    // height
+    // ReticleEnemy
+    addReticleEnemy();
+
+    // Height indicator
     data.gfxGroup.push(game.add.rectangle(
         -200, 0, // xy
         4, 200,  // width, height
@@ -241,6 +251,41 @@ function createGfx() {
         //data.trajCurves.push(new Phaser.Curves.CubicBezier(data.points));
         data.trajCurves.push(new Phaser.Curves.Spline(data.points));
     }
+
+    /* IMPORTANT to have it here */
+    graphics = game.add.graphics();
+    graphics.z = 1;
+}
+
+
+function addReticleEnemy() {
+    var centerX = 400;
+    var centerY = -400;
+
+    data.reticleEnemy = game.add.image(
+        centerX - 10, 
+        centerY + uiConfig.enemyOffset - config.offset, 
+        'enemy');
+    data.gfxGroup.push(data.reticleEnemy);
+}
+
+function drawReticle(graphics) {
+    var centerX = 400;
+    var centerY = -400;
+    var dotOffset = 38; // 15moa in cm
+
+    var color = 0xffff00;
+    var thickness = 4;
+    var alpha = 1;
+
+    graphics.lineStyle(thickness, color, alpha);
+
+    var a = new Phaser.Geom.Point(centerX, centerY);
+    var radius = 86; // 68 moa / 2 in cm
+    graphics.strokeCircle(a.x, a.y, radius);
+    graphics.fillRect(centerX-2, centerY-2, 4, 4);
+    graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
+
 }
 
 
