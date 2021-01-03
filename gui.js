@@ -81,10 +81,10 @@ function initGui() {
         resetGfx();
     }.bind(this));
 
-    f2.add(uiConfig, 'showRing').name("68MOA Eotech reticle enabled?").onChange(function(value) {
+    f2.add(uiConfig, 'showRing').name("68MOA Eotech ring reticle enabled?").onChange(function(value) {
         resetGfx();
     }.bind(this));
-    f2.addColor(uiConfig, 'colorRing').name("68MOA Eotech reticle color").onChange(function(value) {
+    f2.addColor(uiConfig, 'colorRing').name("68MOA Eotech ring reticle color").onChange(function(value) {
         uiConfig.colorRingG = rgbToHex(uiConfig.colorRing[0], uiConfig.colorRing[1], uiConfig.colorRing[2]);
         resetGfx();
     }.bind(this));
