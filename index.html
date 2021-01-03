@@ -57,7 +57,7 @@ var data = {
 window.onload = function() {
     initGui();
     new Phaser.Game(config);
-    //canvas.oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
+    document.getElementsByTagName("canvas").item(0).oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
 };
 
 
