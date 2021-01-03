@@ -4,11 +4,9 @@ function makeLine(item) {
 
 
 function makeEnemy(item) {
-    var enemyWidthScale = 1.0;  // was: uiConfig.scale
-
     data.gfxGroup.push(game.add.image(
         uiConfig.scale * ((item * 100) - 20), 
-        0,
+        uiConfig.enemyOffset,
         'enemy'));
 /*
     // head
@@ -41,7 +39,7 @@ function makeDots(dotsData, color) {
         data.gfxGroup.push(game.add.rectangle(
             uiConfig.scale * (key * 100), value * -1 + config.offset, // xy
             uiConfig.scale * (100), 1,  // width, height
-            0xff8800));
+            color));
     }
 }
 

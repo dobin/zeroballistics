@@ -30,6 +30,8 @@ var UiConfig = function() {
 
     this.topDotZero = true;
     this.showEnemies = true;
+
+    this.enemyOffset = 0;
 }
 var uiConfig = new UiConfig();
 
@@ -101,6 +103,9 @@ function initGui() {
     var f2 = gui.addFolder("Other")
 
     f2.add(uiConfig, 'show10m').name("Show enemy at 10m distance?").onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+    f2.add(uiConfig, 'enemyOffset').name("Enemy vertical offset").min(-100).max(100).onChange(function(value) {
         resetGfx();
     }.bind(this));
 }

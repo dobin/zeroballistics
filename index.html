@@ -173,6 +173,10 @@ function createGfx() {
         data.lineLos = new Phaser.Geom.Line(
             -50, config.offset, 
             uiConfig.scale * (60000), config.offset);
+
+        arr = {};
+        enemyLocations.forEach(element => arr[element] = 0);
+        makeDots(arr, uiConfig.colorLosG);
     } else {
         data.lineLos = null;
     }
