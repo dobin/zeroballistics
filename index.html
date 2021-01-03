@@ -176,6 +176,7 @@ function createGfx() {
 
         arr = {};
         enemyLocations.forEach(element => arr[element] = 0);
+        delete(arr[0]);
         makeDots(arr, uiConfig.colorLosG);
     } else {
         data.lineLos = null;
