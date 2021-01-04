@@ -7,14 +7,24 @@
     <script src="gfxentities.js"></script>
     <script src="staticdata.js"></script>
     <script src="draw.js"></script>
+
+    <style>
+div#health-bar {
+  position: absolute;
+  z-index: 100;
+  color: white;
+  top: 20px;
+  left: 20px;
+}
+    </style>
 </head>
 <body>
 
 <script>
 // Static Config
 var config = {
-    type: Phaser.AUTO,
-    width: 1440,
+    type: Phaser.CANVAS,
+    width: window.innerWidth-20,
     height: 800,
     //backgroundColor: '#788878',
     backgroundColor: '#708e72',
@@ -28,6 +38,7 @@ var config = {
     offset: -84,
     reticleOffsetX: 10000,  // at 100m
     recicleOffsetY: -600,
+    parent: 'mygame',
 };
 
 // Globals, used in all files
@@ -169,9 +180,17 @@ function createGfx() {
     graphics = game.add.graphics();
     graphics.z = 1;
 }
-
-
 </script>
+
+<div id="health-bar">Zero Zero</div>    
+<div id="mygame"></div>
+
+<h1>Zero Zero</h1>
+
+<h2> Trajectories </h2>
+<h2> Eotech Distance </h2>
+<h2> Eotech -2 dot </h2>
+
 
 </body>
 </html>

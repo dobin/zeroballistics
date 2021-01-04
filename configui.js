@@ -39,7 +39,7 @@ var uiConfig = new UiConfig();
 
 function uiConfigInit() {
     var gui = new dat.GUI({ 
-        width: 600,
+        width: 450,
         closed: false,
     });
     gui.remember(uiConfig);
