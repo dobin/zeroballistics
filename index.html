@@ -296,6 +296,13 @@ function addReticleEnemy() {
         centerY + uiConfig.enemyOffset - config.offset, 
         'enemy');
     data.gfxGroup.push(data.reticleEnemy);
+
+    if (data.trajImpactX > 0) {
+        data.gfxGroup.push(game.add.text(
+            centerX-210, centerY, 
+            data.trajImpactX)
+        );
+    }
 }
 
 function drawReticle(graphics) {
