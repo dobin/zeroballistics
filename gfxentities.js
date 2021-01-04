@@ -29,6 +29,9 @@ function makeEnemy(item) {
         data.trajImpactY = trajY;
         data.trajImpactX = closestX;
         data.trajImpactShow = true;
+
+        data.reticleEnemyScale = 1/(100.0 / closestX);
+        resetGfx();
     });
     data.gfxGroup.push(enemy);
 /*

@@ -46,6 +46,7 @@ var data = {
     showDebug: false,
 
     reticleEnemy: null,
+    reticleEnemyScale: 1.0,
 
     trajImpactShow: false,
     trajImpactX: 0,
@@ -309,14 +310,14 @@ function drawReticle(graphics) {
     graphics.lineStyle(thickness, uiConfig.colorRingG, alpha);
     var a = new Phaser.Geom.Point(centerX, centerY);
     var radius = 86; // 68 moa / 2 in cm
-    graphics.strokeCircle(a.x, a.y, radius);
+    graphics.strokeCircle(a.x, a.y, radius*data.reticleEnemyScale);
 
     graphics.fillStyle(uiConfig.colorLosG, 1.0);
     graphics.fillRect(centerX-2, centerY-2, 4, 4);
 
     if (uiConfig.showTwo) {
         graphics.fillStyle(uiConfig.colorTwoG, 1.0);
-        graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
+        graphics.fillRect(centerX-2, centerY-2 + data.reticleEnemyScale*dotOffset, 4, 4);
     }
 
     if (data.trajImpactShow) {
