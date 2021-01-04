@@ -314,8 +314,10 @@ function drawReticle(graphics) {
     graphics.fillStyle(uiConfig.colorLosG, 1.0);
     graphics.fillRect(centerX-2, centerY-2, 4, 4);
 
-    graphics.fillStyle(uiConfig.colorTwoG, 1.0);
-    graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
+    if (uiConfig.showTwo) {
+        graphics.fillStyle(uiConfig.colorTwoG, 1.0);
+        graphics.fillRect(centerX-2, centerY-2 + dotOffset, 4, 4);
+    }
 
     if (data.trajImpactShow) {
         var r1 = 8;
