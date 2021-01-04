@@ -1,3 +1,153 @@
+
+/*
+    Create entities we add to the scene
+*/
+
+function gfxCreateDebug() {
+    // Debug
+    if (uiConfig.showDebug) {
+        data.gfxGroup.push(game.add.rectangle(
+            0, 0, // xy
+            1, 200,  // width, height
+            0xffffff));
+    }
+}
+
+
+function gfxCreateCharacters() {
+    // Player
+    data.gfxGroup.push(game.add.image(-1 * 71, 0, 'lemming'));
+
+    // Enemy
+    if (uiConfig.showEnemies) {
+        enemyLocations.forEach(function (item, index) {
+            if (item == 10 && !uiConfig.show10m) {
+                return;
+            }
+            makeEnemy(item);
+            if (item > 0) {
+                makeNr(item);
+            }
+        }.bind(this));
+    }
+}
+
+
+function gfxCreateReticleEnemy() {
+    var centerX = config.reticleOffsetX;
+    var centerY = config.recicleOffsetY;
+
+    // Reticle Enemy Picture
+    data.reticleEnemy = game.add.image(
+        uiConfig.scale * (centerX - 10), 
+        centerY + uiConfig.enemyOffset - config.offset, 
+        'enemy');
+    data.gfxGroup.push(data.reticleEnemy);
+
+    // Reticle Distance Text
+    if (data.trajImpactX > 0) {
+        data.gfxGroup.push(game.add.text(
+            uiConfig.scale * (centerX-210), 
+            centerY+200, 
+            data.trajImpactX)
+        );
+    }
+}
+
+
+function gfxCreateHeight() {
+    // Height indicator
+    data.gfxGroup.push(game.add.rectangle(
+        -200, 0, // xy
+        4, 200,  // width, height
+        0xffffff));
+    data.gfxGroup.push(game.add.text(
+        -250, 110, 
+        "2m").setScale(6));
+
+    // Line of sight
+    if (uiConfig.showLos) {
+        data.lineLos = new Phaser.Geom.Line(
+            -50, config.offset, 
+            uiConfig.scale * (60000), config.offset);
+
+        arr = {};
+        enemyLocations.forEach(element => arr[element] = 0);
+        delete(arr[0]);
+        makeDots(arr, uiConfig.colorLosG);
+    } else {
+        data.lineLos = null;
+    }
+}
+
+
+function gfxCreateDotTwo() {
+    if (uiConfig.showTwo) {
+        var reverse = 1;
+        if (uiConfig.topDotZero == false) {
+            reverse = -1;
+        }
+
+        data.lineExps = new Phaser.Geom.Line(
+            0, config.offset, 
+            //uiConfig.scale * (60000), config.offset);
+            // xy
+            uiConfig.scale * (2*10000), config.offset+(reverse * (2*38)));
+    } else {
+        data.lineExps = null;
+    }
+}
+
+
+function gfxCreateRing() {
+    if (uiConfig.showRing) {
+        data.lineRing1 = new Phaser.Geom.Line(
+            0, config.offset, 
+            //uiConfig.scale * (60000), config.offset);
+            // xy
+            uiConfig.scale * (2*10000), config.offset+(2*96)); // 15 moa = 38cm
+        data.lineRing2 = new Phaser.Geom.Line(
+            0, config.offset, 
+            //uiConfig.scale * (60000), config.offset);
+            // xy
+            uiConfig.scale * (2*10000), config.offset-(2*96));  // 68moa / 2 = 96cm
+    } else {
+        data.lineRing1 = null;
+        data.lineRing2 = null;
+    }
+}
+
+
+function gfxCreateTrajectories() {
+    // trajectory blocks
+    data.trajCurves = [];
+    trajs = [
+        uiConfig.traj0,
+        uiConfig.traj1,
+        uiConfig.traj2,
+        uiConfig.traj3,
+    ];
+    for(var i=0; i < trajs.length; i++) {
+        if (! trajs[i]) {
+            continue;
+        }
+        makeDots(trajcetories[i].data, uiConfig.trajColorG);
+
+        // trajectory curve
+        data.points = [];
+        for (var key in trajcetories[i].data) {
+            value = trajcetories[i].data[key];
+
+            key = uiConfig.scale * (key * 100);
+            value = value * -1 + config.offset;
+            data.points.push(new Phaser.Math.Vector2(key, value));
+        }
+        //data.trajCurves.push(new Phaser.Curves.CubicBezier(data.points));
+        data.trajCurves.push(new Phaser.Curves.Spline(data.points));
+    }
+}
+
+
 function makeLine(item) {
     // TODO
 }

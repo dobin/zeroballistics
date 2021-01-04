@@ -6,6 +6,7 @@
     <script src="gui.js"></script>
     <script src="gfxentities.js"></script>
     <script src="staticdata.js"></script>
+    <script src="draw.js"></script>
 </head>
 <body>
 
@@ -25,7 +26,8 @@ var config = {
     },
 
     offset: -84,
-    reticleOffsetX: 10000,
+    reticleOffsetX: 10000,  // at 100m
+    recicleOffsetY: -600,
 };
 
 // The game
@@ -68,7 +70,6 @@ function preload ()
 {
     this.load.image('lemming', '17966.png');
     this.load.image('enemy', '321184.png');
-    //this.load.spritesheet('dragcircle', 'assets/sprites/dragcircle.png', { frameWidth: 16 });
 }
 
 // Phaser Create
@@ -91,28 +92,7 @@ function create()
         } else {
             this.cameras.main.zoom -= (z/2);
         }
-        //this.cameras.main.centerToBounds();
-        //
-        //
     });
-/*
-    this.input.on('pointermove', function (pointer)
-    {
-        data.pointerWorldX = pointer.worldX;
-        //console.log(pointer.worldX, pointer.y);
-    }, this);
-*/
-    /*
-    this.input.on('pointerdown', function (pointer) {
-        if (data.trajImpactShow) {
-            data.trajImpactShow = false;
-        } else {
-            data.trajImpactShow = true;
-        }
-//        console.log('down');
-//        resetGfx();
-    }, this);
-    */
 }
 
 
@@ -169,115 +149,12 @@ function resetGfx() {
 function createGfx() {
     data.gfxGroup = [];
 
-    // Debug
-    if (uiConfig.showDebug) {
-        data.gfxGroup.push(game.add.rectangle(
-            0, 0, // xy
-            1, 200,  // width, height
-            0xffffff));
-    }
-
-    // Player
-    data.gfxGroup.push(game.add.image(-1 * 71, 0, 'lemming'));
-
-    // Enemy
-    if (uiConfig.showEnemies) {
-        enemyLocations.forEach(function (item, index) {
-            if (item == 10 && !uiConfig.show10m) {
-                return;
-            }
-            makeEnemy(item);
-            if (item > 0) {
-                makeNr(item);
-            }
-        }.bind(this));
-    }
-
-    // ReticleEnemy
-    addReticleEnemy();
-
-    // Height indicator
-    data.gfxGroup.push(game.add.rectangle(
-        -200, 0, // xy
-        4, 200,  // width, height
-        0xffffff));
-    data.gfxGroup.push(game.add.text(
-        -250, 110, 
-        "2m").setScale(6));
-
-    // Line of sight
-    if (uiConfig.showLos) {
-        data.lineLos = new Phaser.Geom.Line(
-            -50, config.offset, 
-            uiConfig.scale * (60000), config.offset);
-
-        arr = {};
-        enemyLocations.forEach(element => arr[element] = 0);
-        delete(arr[0]);
-        makeDots(arr, uiConfig.colorLosG);
-    } else {
-        data.lineLos = null;
-    }
-
-    if (uiConfig.showTwo) {
-        var reverse = 1;
-        if (uiConfig.topDotZero == false) {
-            reverse = -1;
-        }
-
-        data.lineExps = new Phaser.Geom.Line(
-            0, config.offset, 
-            //uiConfig.scale * (60000), config.offset);
-            // xy
-            uiConfig.scale * (2*10000), config.offset+(reverse * (2*38)));
-    } else {
-        data.lineExps = null;
-    }
-
-    if (uiConfig.showRing) {
-        data.lineRing1 = new Phaser.Geom.Line(
-            0, config.offset, 
-            //uiConfig.scale * (60000), config.offset);
-            // xy
-            uiConfig.scale * (2*10000), config.offset+(2*96)); // 15 moa = 38cm
-        data.lineRing2 = new Phaser.Geom.Line(
-            0, config.offset, 
-            //uiConfig.scale * (60000), config.offset);
-            // xy
-            uiConfig.scale * (2*10000), config.offset-(2*96));  // 68moa / 2 = 96cm
-    } else {
-        data.lineRing1 = null;
-        data.lineRing2 = null;
-    }
-
-        //this.cameras.main.setBounds(-300, -1000, 60000, 1080);
-
-    // trajectory blocks
-    data.trajCurves = [];
-    trajs = [
-        uiConfig.traj0,
-        uiConfig.traj1,
-        uiConfig.traj2,
-        uiConfig.traj3,
-    ];
-    for(var i=0; i < trajs.length; i++) {
-        if (! trajs[i]) {
-            continue;
-        }
-        makeDots(trajcetories[i].data, uiConfig.trajColorG);
-
-        // trajectory curve
-        data.points = [];
-        for (var key in trajcetories[i].data) {
-            value = trajcetories[i].data[key];
-
-            key = uiConfig.scale * (key * 100);
-            value = value * -1 + config.offset;
-            data.points.push(new Phaser.Math.Vector2(key, value));
-        }
-        //data.trajCurves.push(new Phaser.Curves.CubicBezier(data.points));
-        data.trajCurves.push(new Phaser.Curves.Spline(data.points));
-    }
+    gfxCreateCharacters();
+    gfxCreateReticleEnemy();
+    gfxCreateHeight();
+    gfxCreateDotTwo();
+    gfxCreateRing();
+    gfxCreateTrajectories();
 
     /* IMPORTANT to have it here */
     if (graphics != null) {
@@ -287,114 +164,6 @@ function createGfx() {
     graphics.z = 1;
 }
 
-
-function addReticleEnemy() {
-    var centerX = config.reticleOffsetX;
-    var centerY = -400;
-
-    // Reticle Enemy Picture
-    data.reticleEnemy = game.add.image(
-        uiConfig.scale * (centerX - 10), 
-        centerY + uiConfig.enemyOffset - config.offset, 
-        'enemy');
-    data.gfxGroup.push(data.reticleEnemy);
-
-    // Reticle Distance Text
-    if (data.trajImpactX > 0) {
-        data.gfxGroup.push(game.add.text(
-            uiConfig.scale * (centerX-210), 
-            centerY+200, 
-            data.trajImpactX)
-        );
-    }
-}
-
-function drawReticle(graphics) {
-    var centerX = uiConfig.scale * config.reticleOffsetX;
-    var centerY = -400;
-    var dotOffset = 38; // 15moa in cm
-
-    var color = 0xffff00;
-    var thickness = 4;
-    var alpha = 1;
-
-    graphics.lineStyle(thickness, uiConfig.colorRingG, alpha);
-    var a = new Phaser.Geom.Point(centerX, centerY);
-    var radius = 86; // 68 moa / 2 in cm
-    graphics.strokeCircle(a.x, a.y, radius*data.reticleEnemyScale);
-
-    graphics.fillStyle(uiConfig.colorLosG, 1.0);
-    graphics.fillRect(centerX-2, centerY-2, 4, 4);
-
-    if (uiConfig.showTwo) {
-        graphics.fillStyle(uiConfig.colorTwoG, 1.0);
-        graphics.fillRect(centerX-2, centerY-2 + data.reticleEnemyScale*dotOffset, 4, 4);
-    }
-
-    if (data.trajImpactShow) {
-        var r1 = 8;
-        var r2 = 4;
-
-        /* on trajectory */
-        graphics.fillStyle(uiConfig.trajColorG, 1.0);
-        graphics.fillRect(
-            uiConfig.scale * ((data.trajImpactX*100)) - (r1/2), 
-            (data.trajImpactY * -1 + config.offset) - (r1/2), 
-            r1, 
-            r1);
-
-        /* on reticle */
-        graphics.fillStyle(uiConfig.trajColorG, 1.0);
-        graphics.fillRect(
-            centerX - (r2/2), 
-            centerY - (r2/2) - data.trajImpactY, 
-            r2, 
-            r2);
-    }
-}
-
-function drawLines(graphics) {
-    if (data.showDebug) {
-        for (var i = 0; i < data.points.length; i++)
-        {
-            graphics.fillStyle(0x00ff00, 1);
-            graphics.fillCircle(data.points[i].x, data.points[i].y, 4);
-        }
-    }
-
-    // los, white
-    if (data.lineLos != null) {
-        graphics.lineStyle(2, uiConfig.colorLosG, 1);
-        graphics.strokeLineShape(data.lineLos);
-        //graphics.lineBetween(0, config.offset, 
-        //    uiConfig.scale * (60000), config.offset);
-    }
-
-    // exps, grey-yellow
-    if (data.lineExps != null) {
-        graphics.lineStyle(2, uiConfig.colorTwoG, 1);
-        graphics.strokeLineShape(data.lineExps);
-        //graphics.lineBetween(0, config.offset, 
-        //    uiConfig.scale * (10000), config.offset+38);
-    }
-
-    // ring, grey
-    if (data.lineRing1 != null) {
-        graphics.lineStyle(2, uiConfig.colorRingG, 1);
-        graphics.strokeLineShape(data.lineRing1);
-        //graphics.lineBetween(0, config.offset, 
-        //    uiConfig.scale * (10000), config.offset+96);
-        graphics.strokeLineShape(data.lineRing2);
-        //graphics.lineBetween(0, config.offset, 
-        //    uiConfig.scale * (10000), config.offset-96);
-    }
-
-    // trajectories, red
-    graphics.lineStyle(2, uiConfig.trajColorG, 1);
-    for(var i=0; i<data.trajCurves.length; i++) {
-        data.trajCurves[i].draw(graphics);
-    }
-}
 
 </script>
 
