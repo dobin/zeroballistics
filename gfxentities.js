@@ -9,9 +9,12 @@ function makeEnemy(item) {
         uiConfig.enemyOffset,
         'enemy');
     enemy.setInteractive();
-    enemy.on('pointerdown', function (pointer) {
+    enemy.on('pointerup', function (pointer) {
         //data.pointerWorldX = pointer.worldX;
         var a = getTrajY(pointer);
+        if (a == null) {
+            return;
+        }
         var closestX = a[0];
         var trajY = a[1];
 
@@ -34,34 +37,47 @@ function makeEnemy(item) {
         resetGfx();
     });
     data.gfxGroup.push(enemy);
-/*
-    // head
-    data.gfxGroup.push(game.add.rectangle(
-        uiConfig.scale * (item * 100), -80, // xy
-        enemyWidthScale * (20), 40,  // width, height
-        0x666622));
-    // legs
-    data.gfxGroup.push(game.add.rectangle(
-        uiConfig.scale * (item * 100), 60, // xy
-        enemyWidthScale * (30), 80,  // width, height
-        0x1166ff));
-    // body
-    data.gfxGroup.push(game.add.rectangle(
-        uiConfig.scale * (item * 100), -20, // xy
-        enemyWidthScale * (50), 100,  // width, height
-        0x6622ff));*/
 }
 
 
 function getTrajY(pointer) {
     var traj = getTraj();
+    if (traj == null) {
+        return null;
+    }
+
     var closestX = closest(pointer.worldX/10, enemyLocations);
     var trajY = traj[closestX];
     return [closestX, trajY];
 }
 
 function getTraj() {
-    return trajcetories[1].data;
+    var traj = null;
+    var trajCount = 0;
+
+    if (uiConfig.traj0) {
+        traj = trajcetories[0];
+        trajCount++;
+    }
+    if (uiConfig.traj1) {
+        traj = trajcetories[1];
+        trajCount++;
+    }
+    if (uiConfig.traj2) {
+        traj = trajcetories[2];
+        trajCount++;
+    }
+    if (uiConfig.traj3) {
+        traj = trajcetories[3];
+        trajCount++;
+    }
+
+    if (trajCount > 1) {
+        alert("More than one trajectory selected. Select one max");
+        return null;
+    } else {
+        return traj.data;
+    }
 }
 
 // https://stackoverflow.com/questions/8584902/get-the-closest-number-out-of-an-array
