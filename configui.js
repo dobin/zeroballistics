@@ -33,6 +33,7 @@ var UiConfig = function() {
     this.showEnemies = true;
 
     this.enemyOffset = 0;  // Dynamic, runtime enemy vertical offset
+    this.showReticle = false;
 }
 var uiConfig = new UiConfig();
 
@@ -107,6 +108,10 @@ function uiConfigInit() {
         resetGfx();
     }.bind(this));
     f2.add(uiConfig, 'enemyOffset').name("Enemy vertical offset").min(-100).max(100).onChange(function(value) {
+        resetGfx();
+    }.bind(this));
+
+    gui.add(uiConfig, 'showReticle').name("Show Eotech reticle").onChange(function(value) {
         resetGfx();
     }.bind(this));
 }

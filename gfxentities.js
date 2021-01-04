@@ -159,7 +159,11 @@ function makeEnemy(item) {
         uiConfig.enemyOffset,
         'enemy');
     enemy.setInteractive();
-    enemy.on('pointerup', function (pointer) {
+    enemy.on('pointerdown', function (pointer) {
+        if (pointer.rightButtonDown()) {
+            return;
+        }
+
         //data.pointerWorldX = pointer.worldX;
         var a = getTrajY(pointer);
         if (a == null) {

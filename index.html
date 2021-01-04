@@ -24,7 +24,7 @@ div#health-bar {
 // Static Config
 var config = {
     type: Phaser.CANVAS,
-    width: window.innerWidth-20,
+    width: window.innerWidth-30,
     height: 800,
     //backgroundColor: '#788878',
     backgroundColor: '#708e72',
@@ -37,7 +37,7 @@ var config = {
 
     offset: -84,
     reticleOffsetX: 10000,  // at 100m
-    recicleOffsetY: -600,
+    recicleOffsetY: -500,
     parent: 'mygame',
 };
 
@@ -66,11 +66,61 @@ var data = {
     trajImpactY: 0,
 };
 
+var ptrDistanceObj = {
+    // 0 no points
+    // 1 1 point
+    // 2 2 points
+    state: 0,
+
+    pointA: null,
+    pointB: null,
+    distance: null,
+
+    line: null,
+    text: null,
+}
+
+function ptrDistanceStateMachine(pointer) {
+    switch(ptrDistanceObj.state) {
+        case 0:
+            ptrDistanceObj.pointA = game.add.image(pointer.worldX, pointer.worldY, 'point');
+            ptrDistanceObj.pointA.depth = 99;
+            ptrDistanceObj.pointA.z = 99;
+            ptrDistanceObj.state = 1;
+            break;
+        case 1:
+            ptrDistanceObj.pointB = game.add.image(
+                ptrDistanceObj.pointA.x, 
+                pointer.worldY, 
+                'point');
+            ptrDistanceObj.pointB.depth = 99;
+            ptrDistanceObj.state = 2;
+            var distance = Math.round(Math.abs(ptrDistanceObj.pointA.y - ptrDistanceObj.pointB.y));
+            ptrDistanceObj.text = game.add.text(
+                ptrDistanceObj.pointA.x,
+                ptrDistanceObj.pointA.y,
+                distance + "cm");
+            ptrDistanceObj.text.depth = 99;
+            break;
+        case 2:
+            ptrDistanceObj.pointA.destroy();
+            ptrDistanceObj.pointB.destroy();
+            ptrDistanceObj.text.destroy();
+            ptrDistanceObj.pointA = null;
+            ptrDistanceObj.pointB = null;
+            ptrDistanceObj.text = null;
+            ptrDistanceObj.state = 0;
+            //resetGfx();
+            break;
+    }
+}
+
 
 // Start here
 window.onload = function() {
     uiConfigInit();
     new Phaser.Game(config);
+    console.log(Phaser.Math);
     document.getElementsByTagName("canvas").item(0).oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
 };
 
@@ -80,8 +130,9 @@ window.onload = function() {
 // Phaser Preload
 function preload ()
 {
-    this.load.image('lemming', '17966.png');
-    this.load.image('enemy', '321184.png');
+    this.load.image('lemming', 'assets/17966.png');
+    this.load.image('enemy', 'assets/321184.png');
+    this.load.image('point', 'assets/point.png');
 }
 
 // Phaser Create
@@ -105,6 +156,26 @@ function create()
             this.cameras.main.zoom -= (z/2);
         }
     });
+
+    this.input.on('pointerdown', function (pointer) {
+        if (pointer.rightButtonDown())
+        {
+            ptrDistanceStateMachine(pointer);
+
+            if (pointer.getDuration() > 500)
+            {
+                //this.add.image(pointer.worldX, pointer.worldY, 'point');
+            }
+            else
+            {
+                //ptrDistanceStateMachine(pointer);
+                //this.add.image(pointer.x, pointer.y, 'point');
+            }
+        }
+        else
+        {
+        }
+    }, this);
 }
 
 
@@ -123,7 +194,10 @@ function update(time, delta)
 
     graphics.clear();
     drawLines(graphics);
-    drawReticle(graphics);
+
+    if (uiConfig.showReticle) {
+        drawReticle(graphics);
+    }
 }
 
 
@@ -154,6 +228,7 @@ function handleInputZoom(tt) {
 
 /* Removes and adds all graphics */
 function resetGfx() {
+    console.log("Reset GFX");
     data.gfxGroup.forEach(function (item, index) {
             item.destroy();
         });
@@ -165,7 +240,9 @@ function createGfx() {
     data.gfxGroup = [];
 
     gfxCreateCharacters();
-    gfxCreateReticleEnemy();
+    if (uiConfig.showReticle) {
+        gfxCreateReticleEnemy();
+    }
     gfxCreateHeight();
     gfxCreateDotTwo();
     gfxCreateRing();
@@ -182,14 +259,9 @@ function createGfx() {
 }
 </script>
 
-<div id="health-bar">Zero Zero</div>    
+
 <div id="mygame"></div>
 
-<h1>Zero Zero</h1>
-
-<h2> Trajectories </h2>
-<h2> Eotech Distance </h2>
-<h2> Eotech -2 dot </h2>
 
 
 </body>
