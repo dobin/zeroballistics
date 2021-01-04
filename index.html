@@ -25,7 +25,7 @@ var config = {
     },
 
     offset: -84,
-    reticleOffsetX: 1000,
+    reticleOffsetX: 10000,
 };
 
 // The game
@@ -292,22 +292,25 @@ function addReticleEnemy() {
     var centerX = config.reticleOffsetX;
     var centerY = -400;
 
+    // Reticle Enemy Picture
     data.reticleEnemy = game.add.image(
-        centerX - 10, 
+        uiConfig.scale * (centerX - 10), 
         centerY + uiConfig.enemyOffset - config.offset, 
         'enemy');
     data.gfxGroup.push(data.reticleEnemy);
 
+    // Reticle Distance Text
     if (data.trajImpactX > 0) {
         data.gfxGroup.push(game.add.text(
-            centerX-210, centerY, 
+            uiConfig.scale * (centerX-210), 
+            centerY+200, 
             data.trajImpactX)
         );
     }
 }
 
 function drawReticle(graphics) {
-    var centerX = config.reticleOffsetX;
+    var centerX = uiConfig.scale * config.reticleOffsetX;
     var centerY = -400;
     var dotOffset = 38; // 15moa in cm
 
@@ -335,7 +338,7 @@ function drawReticle(graphics) {
         /* on trajectory */
         graphics.fillStyle(uiConfig.trajColorG, 1.0);
         graphics.fillRect(
-            (data.trajImpactX * 10) - (r1/2), 
+            uiConfig.scale * ((data.trajImpactX*100)) - (r1/2), 
             (data.trajImpactY * -1 + config.offset) - (r1/2), 
             r1, 
             r1);
