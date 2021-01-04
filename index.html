@@ -25,6 +25,7 @@ var config = {
     },
 
     offset: -84,
+    reticleOffsetX: 1000,
 };
 
 // The game
@@ -288,7 +289,7 @@ function createGfx() {
 
 
 function addReticleEnemy() {
-    var centerX = 400;
+    var centerX = config.reticleOffsetX;
     var centerY = -400;
 
     data.reticleEnemy = game.add.image(
@@ -306,7 +307,7 @@ function addReticleEnemy() {
 }
 
 function drawReticle(graphics) {
-    var centerX = 400;
+    var centerX = config.reticleOffsetX;
     var centerY = -400;
     var dotOffset = 38; // 15moa in cm
 
