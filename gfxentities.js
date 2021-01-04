@@ -39,7 +39,7 @@ function gfxCreateReticleEnemy() {
 
     // Reticle Enemy Picture
     data.reticleEnemy = game.add.image(
-        uiConfig.scale * (centerX - 10), 
+        (uiConfig.scale * (centerX)) - 10, 
         centerY + uiConfig.enemyOffset - config.offset, 
         'enemy');
     data.gfxGroup.push(data.reticleEnemy);
