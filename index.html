@@ -3,7 +3,7 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
     <script src="https://labs.phaser.io/js/datgui.js"></script>
-    <script src="gui.js"></script>
+    <script src="configui.js"></script>
     <script src="gfxentities.js"></script>
     <script src="staticdata.js"></script>
     <script src="draw.js"></script>
@@ -30,7 +30,7 @@ var config = {
     recicleOffsetY: -600,
 };
 
-// The game
+// Globals, used in all files
 var game = null;
 var graphics = null;
 
@@ -46,7 +46,6 @@ var data = {
     trajCurves: null,
 
     points: [],
-    showDebug: false,
 
     reticleEnemy: null,
     reticleEnemyScale: 1.0,
@@ -59,11 +58,13 @@ var data = {
 
 // Start here
 window.onload = function() {
-    initGui();
+    uiConfigInit();
     new Phaser.Game(config);
     document.getElementsByTagName("canvas").item(0).oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
 };
 
+
+/*********** Phaser ***************/
 
 // Phaser Preload
 function preload ()
@@ -107,7 +108,7 @@ function update(time, delta)
         this.reload = false;
     }
 
-    handleZoom(this);
+    handleInputZoom(this);
 
     graphics.clear();
     drawLines(graphics);
@@ -115,7 +116,7 @@ function update(time, delta)
 }
 
 
-function handleZoom(tt) {
+function handleInputZoom(tt) {
     z = tt.cameras.main.zoom;
 
     // https://www.html5gamedevs.com/topic/9814-move-camera-by-dragging-the-world-floor/
@@ -129,7 +130,8 @@ function handleZoom(tt) {
             tt.cameras.main.scrollX += sX / z;
             tt.cameras.main.scrollY += sY / z;
                 
-        } // set new drag origin to current position
+        } 
+        // set new drag origin to current position
         tt.game.origDragPoint = tt.game.input.activePointer.position.clone();
     } else {
         tt.game.origDragPoint = null;
@@ -139,6 +141,7 @@ function handleZoom(tt) {
 
 /**************************************/
 
+/* Removes and adds all graphics */
 function resetGfx() {
     data.gfxGroup.forEach(function (item, index) {
             item.destroy();
@@ -146,6 +149,7 @@ function resetGfx() {
     createGfx();
 }
 
+/* Create all graphics */
 function createGfx() {
     data.gfxGroup = [];
 
@@ -156,7 +160,9 @@ function createGfx() {
     gfxCreateRing();
     gfxCreateTrajectories();
 
-    /* IMPORTANT to have it here */
+    /* IMPORTANT to have it here 
+       graphics layer
+    */
     if (graphics != null) {
         graphics.destroy();
     }

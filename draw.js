@@ -52,7 +52,7 @@ function drawReticle(graphics) {
 }
 
 function drawLines(graphics) {
-    if (data.showDebug) {
+    if (uiConfig.showDebug) {
         for (var i = 0; i < data.points.length; i++)
         {
             graphics.fillStyle(0x00ff00, 1);

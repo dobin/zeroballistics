@@ -2,6 +2,7 @@
 // Dynamic Config
 var UiConfig = function() {
     this.reload = false;
+    this.showDebug = false;
 
     this.traj0 = false;
     this.traj1 = false;
@@ -31,12 +32,12 @@ var UiConfig = function() {
     this.topDotZero = true;
     this.showEnemies = true;
 
-    this.enemyOffset = 0;
+    this.enemyOffset = 0;  // Dynamic, runtime enemy vertical offset
 }
 var uiConfig = new UiConfig();
 
 
-function initGui() {
+function uiConfigInit() {
     var gui = new dat.GUI({ 
         width: 600,
         closed: false,
