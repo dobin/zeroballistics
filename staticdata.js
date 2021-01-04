@@ -1,7 +1,7 @@
 
 var trajcetories = [
     {
-        'link': '',
+        'link': 'http://www.shooterscalculator.com/ballistic-trajectory-chart.php?pl=223+Remington&presets=223+Remington%7E223+REM+70gr+Berger+VLD%7EG1%7E0.371%7E70%7E2850%7E100%7E1.5%7E0%7E10%7E90%7Efalse%7E0%7E59%7E29.92%7E50%7Etrue%7E1000%7E25&df=G1&bc=0.371&bw=70&vi=2850&zr=25&sh=3.7&sa=0&ws=0&wa=0&cr=600&ss=25&chartColumns=Range%7Eyd%3BElevation%7Ein%3BEnergy%7Eft.lbf%3BVel%5Bx%2By%5D%7Eft%2Fs&lbl=223+REM+70gr+Berger+VLD&submitst=+Create+Graph+',
         'title': '556 25yards',
         'data': {
             0: -9.398,
@@ -32,7 +32,7 @@ var trajcetories = [
         },
     },
     {
-        'link': '',
+        'link': 'http://www.shooterscalculator.com/ballistic-trajectory-chart.php?pl=223+Remington&presets=223+Remington%7E223+REM+70gr+Berger+VLD%7EG1%7E0.371%7E70%7E2850%7E100%7E1.5%7E0%7E10%7E90%7Efalse%7E0%7E59%7E29.92%7E50%7Etrue%7E1000%7E25&df=G1&bc=0.371&bw=70&vi=2850&zr=37&sh=3.7&sa=0&ws=0&wa=0&cr=600&ss=25&chartColumns=Range%7Eyd%3BElevation%7Ein%3BEnergy%7Eft.lbf%3BVel%5Bx%2By%5D%7Eft%2Fs&lbl=223+REM+70gr+Berger+VLD&submitst=+Create+Graph+',
         'title': '556 37yards',
         'data': {
             0: -9.398,
@@ -63,7 +63,7 @@ var trajcetories = [
         },
     },
     {
-        'link': '',
+        'link': 'http://www.shooterscalculator.com/ballistic-trajectory-chart.php?pl=223+Remington&presets=223+Remington%7E223+REM+70gr+Berger+VLD%7EG1%7E0.371%7E70%7E2850%7E100%7E1.5%7E0%7E10%7E90%7Efalse%7E0%7E59%7E29.92%7E50%7Etrue%7E1000%7E25&df=G1&bc=0.371&bw=70&vi=2850&zr=50&sh=3.7&sa=0&ws=0&wa=0&cr=600&ss=25&chartColumns=Range%7Eyd%3BElevation%7Ein%3BEnergy%7Eft.lbf%3BVel%5Bx%2By%5D%7Eft%2Fs&lbl=223+REM+70gr+Berger+VLD&submitst=+Create+Graph+',
         'title': '556 50yards',
         'data': {
             0: -9.398,
@@ -94,7 +94,7 @@ var trajcetories = [
         },
     },
     {
-        'link': '',
+        'link': 'http://www.shooterscalculator.com/ballistic-trajectory-chart.php?pl=223+Remington&presets=223+Remington%7E223+REM+70gr+Berger+VLD%7EG1%7E0.371%7E70%7E2850%7E100%7E1.5%7E0%7E10%7E90%7Efalse%7E0%7E59%7E29.92%7E50%7Etrue%7E1000%7E25&df=G1&bc=0.371&bw=70&vi=2850&zr=100&sh=3.7&sa=0&ws=0&wa=0&cr=600&ss=25&chartColumns=Range%7Eyd%3BElevation%7Ein%3BEnergy%7Eft.lbf%3BVel%5Bx%2By%5D%7Eft%2Fs&lbl=223+REM+70gr+Berger+VLD&submitst=+Create+Graph+',
         'title': '556 100yards',
         'data': {
             0: -9.398,
