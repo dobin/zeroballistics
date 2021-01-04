@@ -45,8 +45,8 @@ function getTrajY(pointer) {
     if (traj == null) {
         return null;
     }
-
-    var closestX = closest(pointer.worldX/10, enemyLocations);
+    var realPtr = (pointer.worldX / uiConfig.scale) / 100;
+    var closestX = closest(realPtr, enemyLocations);
     var trajY = traj[closestX];
     return [closestX, trajY];
 }
