@@ -6,7 +6,6 @@
 function drawReticle(graphics) {
     var centerX = uiConfig.scale * config.reticleOffsetX;
     var centerY = config.recicleOffsetY;
-    var dotOffset = 38; // 15moa in cm
 
     var color = 0xffff00;
     var thickness = 4;
@@ -25,7 +24,7 @@ function drawReticle(graphics) {
     /* 2nd dot */
     if (uiConfig.showTwo) {
         graphics.fillStyle(uiConfig.colorTwoG, 1.0);
-        graphics.fillRect(centerX-2, centerY-2 + data.reticleEnemyScale*dotOffset, 4, 4);
+        graphics.fillRect(centerX-2, centerY-2 + data.reticleEnemyScale*config.model2offset, 4, 4);
     }
 
     /* impact dot */

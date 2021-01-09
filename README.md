@@ -14,11 +14,11 @@ python3 -m http.server
   * 1 inch = 2.54cm
 * 1 pixel = 1cm
 * 1 MOA = 1 inch @ 100m
+* Eotech 2nd dot offset is 10.5moa
 
 ## Shooterscalculator data
 
 Link: http://www.shooterscalculator.com/ballistic-trajectory-chart.php
-
 
 * 223 Remington 
 * Drag Function: G+

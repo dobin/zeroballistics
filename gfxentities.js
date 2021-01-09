@@ -88,11 +88,12 @@ function gfxCreateDotTwo() {
             reverse = -1;
         }
 
+        var endDist = 6;
         data.lineExps = new Phaser.Geom.Line(
             0, config.offset, 
             //uiConfig.scale * (60000), config.offset);
             // xy
-            uiConfig.scale * (2*10000), config.offset+(reverse * (2*38)));
+            uiConfig.scale * (endDist*10000), config.offset+(reverse * (endDist*config.model2offset)));
     } else {
         data.lineExps = null;
     }
