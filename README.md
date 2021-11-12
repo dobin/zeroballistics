@@ -1,5 +1,14 @@
 # ZeroBallistics
 
+A tool to visualize bullet ballistics. [Try it here](https://deeb.ch/zeroballistics/)
+
+* Explore different zero distances (50m vs. 100m) and its impact on bullet drop
+* See when you need hold above, or below
+* Analyse EOTECH circle and 2-dot possibilities
+
+![Screenshot](/assets/xtarget-screenshot.png)
+
+
 
 ## Serve
 
@@ -9,6 +18,8 @@ python3 -m http.server
 
 ## Precision 
 
+It is not meant to be precise.
+
 * shooterscalculator data 
   * 1 yard = 1m
   * 1 inch = 2.54cm
@@ -16,7 +27,7 @@ python3 -m http.server
 * 1 MOA = 1 inch @ 100m
 * Eotech 2nd dot offset is 10.5moa
 
-## Shooterscalculator data
+## Data source
 
 Link: http://www.shooterscalculator.com/ballistic-trajectory-chart.php
 
