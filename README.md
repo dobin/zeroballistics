@@ -1,13 +1,12 @@
 # ZeroBallistics
 
-A tool to visualize bullet ballistics. [Try it here](https://deeb.ch/zeroballistics/)
+A tool to visualize bullet ballistics. [Try it here](https://deeb.ch/zeroballistics/) or watch the [Video](https://youtu.be/y6i20SIJWqM).
 
 * Explore different zero distances (50m vs. 100m) and its impact on bullet drop
 * See when you need hold above, or below
 * Analyse EOTECH circle and 2-dot possibilities
 
 ![Screenshot](/assets/xtarget-screenshot.png)
-
 
 
 ## Serve
